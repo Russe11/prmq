@@ -43,6 +43,10 @@ class PRMQ {
         });
     })
   }
+
+  exchange(exchangeName) {
+    return this.createExchange(exchangeName);
+  }
 }
 
 class _exchange {

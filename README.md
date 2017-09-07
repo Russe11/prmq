@@ -1,8 +1,13 @@
 # PRMQ
-### Promise Based AMPQ Wrapper For RabbitMQ and Javascript
+### Promise based amqplib wrapper For RabbitMQ and Javascript
+
+Based on https://github.com/squaremo/amqp.node - copyright (c) 2013, 2014 Michael Bridgen <mikeb@squaremobius.net>
+
+--
+
 This software is very much very still in development with current only support for the PubSub pattern
 
-### Only compatible with Node 4+
+### Current compatible with Node 4 or higher.
 
 ## Usage
 

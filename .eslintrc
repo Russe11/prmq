@@ -1,0 +1,11 @@
+{
+    "env": {
+      "node": true,
+      "es6": true
+    },
+    "extends": "airbnb-base",
+    "rules": {
+      "func-names": ["error", "never"],
+      "no-underscore-dangle": "off"
+    }
+  }

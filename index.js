@@ -20,29 +20,28 @@
 
 const amqp = require('amqplib');
 const P = require('bluebird');
+const Exchange = require('./lib/exchange');
+const Queue = require('./lib/queue');
 
 class PRMQ {
-
   /**
    * @param {string} connectionString
    * @param {boolean} durable
    */
-  constructor(connectionString, durable = true) {
-    this._open = amqp.connect(connectionString)
-    this._ch;
+  constructor(connectionString) {
+    this._open = amqp.connect(connectionString);
   }
 
   getChannel() {
     if (this._ch) {
-      return new P((resolve) => resolve(this._ch));
+      return P.resolve(this._ch);
     }
-    return this._open.then((conn) => {
-      return conn.createChannel();
-    })
-      .then(ch => {
+    return this._open
+      .then(conn => conn.createChannel())
+      .then((ch) => {
         this._ch = ch;
         return ch;
-      })
+      });
   }
 
   queue(queueName, options) {
@@ -52,37 +51,33 @@ class PRMQ {
 
   /**
    * Create a RabbitMQ exchange
-   * @param {string} exchangeName 
-   * @param {*?} options 
+   * @param {string} exchangeName
+   * @param {*?} options
    */
   exchange(exchangeName, type, options) {
     return this.getChannel()
-      .then(ch => new Exchange(ch, exchangeName, 'fanout', options))
-        .then(exchange => exchange.assert())
+      .then(ch => new Exchange(ch, exchangeName, type, options))
+      .then(exchange => exchange.assert());
   }
 
 
   /**
    * Remove exchange and queues from RabbitMQ
-   * @param {string} exchangeName 
-   * @param {string[]?} queues 
+   * @param {string} exchangeName
+   * @param {string[]?} queues
    */
   deleteExchangeAndQueues(exchangeName, queues = []) {
-    return this._open.then((conn) => {
-      return conn.createChannel();
-    }).then(ch => {
-      return P.join(
-        ch.deleteExchange(exchangeName),
-        P.map(queues, (queue) => {
-          return ch.deleteQueue(queue);
-        })
-      );
-    })
+    return this._open
+      .then(conn => conn.createChannel())
+      .then((ch) => P.join(
+          ch.deleteExchange(exchangeName),
+          P.map(queues, queue => ch.deleteQueue(queue))
+        ));
   }
 
   /**
    * Remove exchange from RabbitMQ
-   * @param {string} exchangeName 
+   * @param {string} exchangeName
    */
   deleteExchange(exchangeName) {
     return this.deleteExchangeAndQueues(exchangeName)
@@ -113,24 +108,6 @@ class Exchange {
     return this._ch.deleteExchange(this._exchangeName);
   }
 
-  subscribe(queueName, options, onMessage) {
-    return this._ch.assertQueue(queueName, options)
-      .then(q => {
-        return this._ch.bindQueue(q.queue, this._exchangeName, queueName)
-          .then(() => {
-            this._ch.consume(q.queue, (msg) => {
-              onMessage(JSON.parse(msg.content.toString()), () => {
-                this._ch.ack(msg)
-              })
-            }, { noAck: false });
-          })
-      });
-  }
-
-  unsubscribe(queue, options) {
-    return this._ch.unbindQueue
-  }
-
   publish(message) {
     return this._ch.publish(this._exchangeName, '', Buffer.from(JSON.stringify(message)));
   }
@@ -146,7 +123,6 @@ class Queue {
   }
 
   assert() {
-
     return this._ch.assertQueue(this._queueName, this._options)
       .then(q => {
         this._q = q;
@@ -163,6 +139,13 @@ class Queue {
     }, {noAck: true});
   }
 
+  onMessageRaw(cb) {
+    this._ch.consume(this._q.queue, (msg) => {
+      return cb(msg);
+    }, {noAck: true});
+  }
+
+
   onMessageWithAck(cb) {
     this._ch.consume(q.queue, (msg) => {
       return cb(msg, () => {
@@ -170,6 +153,14 @@ class Queue {
       })
     }, { noAck: false });
   }
+
+  onMessageRawWithAck(cb) {
+    this._ch.consume(q.queue, (msg) => {
+      return cb(msg, () => {
+        this._ch.ack(msg)
+      })
+    }, { noAck: false });
+  };
 
 }
 

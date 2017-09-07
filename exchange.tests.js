@@ -1,6 +1,6 @@
 const chai = require('chai');
 const expect = chai.expect;
-const PRMQ = require('./index');
+const PRMQ = require( './index' );
 const prmq = new PRMQ('amqp://localhost');
 
 describe("exchange()", function() {

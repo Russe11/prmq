@@ -1,4 +1,10 @@
-2017-09-07, Version 0.0.3
+2017-09-07, Version 0.0.4
+=========================
+
+ * Added exchange delete method and updated test (Russell Lewis)
+
+
+2017-09-06, Version 0.0.3
 =========================
 
  * Updated readme to include require (Russell Lewis)

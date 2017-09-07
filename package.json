@@ -1,0 +1,30 @@
+{
+  "name": "prmq",
+  "version": "1.0.0",
+  "description": "Promise Based AMPQ Wrapper for JS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Russe11/prmq.git"
+  },
+  "keywords": [
+    "RabbitMQ"
+  ],
+  "author": "Russell Lewis (russlewis@gmail.com)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Russe11/prmq/issues"
+  },
+  "homepage": "https://github.com/Russe11/prmq#readme",
+  "dependencies": {
+    "amqplib": "^0.5.1",
+    "bluebird": "^3.5.0"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^3.5.0"
+  }
+}

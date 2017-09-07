@@ -13,7 +13,7 @@ const PRMQ = require('prmq');
 const prmq = new PRMQ('amqp://localhost');
 
 // Create an exchange
-prmq.createExchange('exchange_name')
+prmq.exchange('exchange_name')
 
   .then((exchange) => {
 

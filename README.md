@@ -9,6 +9,7 @@ This software is very much very still in development with current only support f
 To create a basic PubSub exchange
 
 ``` Javascript
+const PRMQ = require('prmq');
 const prmq = new PRMQ('amqp://localhost');
 
 // Create an exchange

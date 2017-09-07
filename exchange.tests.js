@@ -1,6 +1,7 @@
+const P = require('bluebird');
 const chai = require('chai');
 const expect = chai.expect;
-const PRMQ = require( './index' );
+const PRMQ = require('./index');
 const prmq = new PRMQ('amqp://localhost');
 
 describe("exchange()", function() {
@@ -11,24 +12,19 @@ describe("exchange()", function() {
 
   it('create and receive message', function(done) {
 
-    prmq.exchange('test_exchange', 'fanout')
-      .then(function(exchange) {
-        return prmq.queue('test_queue')
-          .then(function(test_queue) {
-            return test_queue
-              .assert()
-              .then(function(){ return test_queue.bindWithExchange(exchange) })
-              .then(function(){
-                test_queue.onMessage(function(message){
-                  console.log(message)
-                  done();
-                });
-              })
-          })
-          .then(function(){
-            exchange.publish({test: 'test message 1'});
-          })
-        });
+    const processMessage = (message, ack) => {
+      expect(JSON.parse(message).test).to.eq('test message 1');
+      ack();
+      done();
+    };
 
-  })
+    prmq.exchange('test_exchange', 'fanout')
+      .then(ex =>
+        prmq.queue('test_queue')
+          .then(q => P.join(
+            q.bindWithExchange(ex),
+            q.onMessageWithAck(processMessage),
+          ))
+          .then(() => ex.publish({ test: 'test message 1' })));
+  });
 });

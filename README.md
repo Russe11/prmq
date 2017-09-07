@@ -12,27 +12,30 @@ To create a basic PubSub exchange
 const PRMQ = require('prmq');
 const prmq = new PRMQ('amqp://localhost');
 
-// Create an exchange
-prmq.exchange('exchange_name')
+// Create Exchange on RabbitMQ
+prmq.exchange('test_exchange', 'fanout')
+  .then(ex =>
+    // Create Queue
+    prmq.queue('test_queue')
+      .then(q =>
+        P.join(
 
-  .then((exchange) => {
+          // Bind queue with the exchange
+          q.bindWithExchange(ex),
 
-    // Create a queue and bind it to the exchange
-    exchange.subscribe('queue_name', (message, ack) => {
-      console.log(message);
-      // Ack the message
-      ack();
-    })
+          // Specify what happens when a message is sent
+          q.onMessageWithAck(processMessage),
+        ))
 
-  });
+      // Publish a message to the exchange
+      .then(() => ex.publish({ test: 'test message 1' })));
 
-// Publish to exchange
-prmq.exchange('exchange_name')
-  .then((exchange) => exchange.publish({data: "test message"}));
+const processMessage = (message, ack) => {
+  expect(JSON.parse(message).test).to.eq('test message 1');
+  ack();
+};
+
 ```
-
-
-
 
 ## License
 

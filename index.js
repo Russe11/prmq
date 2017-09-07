@@ -46,19 +46,21 @@ class PRMQ {
 
   queue(queueName, options) {
     return this.getChannel()
-      .then(ch => new Queue(ch, queueName, options));
+      .then(ch => new Queue(ch, queueName, options))
+      .then(q => q.assertQueue())
   }
 
   /**
-   * Create a RabbitMQ exchange
+   * Create a Exchange and assert to RabbitMQ server
    * @param {string} exchangeName
    * @param {*?} options
    */
   exchange(exchangeName, type, options) {
     return this.getChannel()
       .then(ch => new Exchange(ch, exchangeName, type, options))
-      .then(exchange => exchange.assert());
+      .then(ex => ex.assertExchange());
   }
+
 
 
   /**
@@ -70,9 +72,9 @@ class PRMQ {
     return this._open
       .then(conn => conn.createChannel())
       .then((ch) => P.join(
-          ch.deleteExchange(exchangeName),
-          P.map(queues, queue => ch.deleteQueue(queue))
-        ));
+        ch.deleteExchange(exchangeName),
+        P.map(queues, queue => ch.deleteQueue(queue))
+      ));
   }
 
   /**
@@ -82,85 +84,6 @@ class PRMQ {
   deleteExchange(exchangeName) {
     return this.deleteExchangeAndQueues(exchangeName)
   }
-
-}
-
-
-
-class Exchange {
-  constructor(ch, exchangeName, type, options) {
-    this._ch = ch;
-    this._exchangeName = exchangeName;
-    this._options = options;
-    this._type = type;
-  }
-
-  assert() {
-    return this._ch.assertExchange(this._exchangeName, this._type, this._options)
-      .then(() => this);
-  }
-
-  /**
-   * Delete Exchange
-   * @returns {{exchange, ifUnused, ticket, nowait}|<Replies.Empty>|void}
-   */
-  delete() {
-    return this._ch.deleteExchange(this._exchangeName);
-  }
-
-  publish(message) {
-    return this._ch.publish(this._exchangeName, '', Buffer.from(JSON.stringify(message)));
-  }
-
-}
-
-class Queue {
-  constructor (ch, queueName, options) {
-    this._ch = ch;
-    this._queueName = queueName;
-    this._options = options;
-
-  }
-
-  assert() {
-    return this._ch.assertQueue(this._queueName, this._options)
-      .then(q => {
-        this._q = q;
-      })
-  }
-
-  bindWithExchange(exchange) {
-    return this._ch.bindQueue(this._q.queue, exchange._exchangeName, this._queueName);
-  }
-
-  onMessage(cb) {
-    this._ch.consume(this._q.queue, (msg) => {
-      return cb(msg.content.toString());
-    }, {noAck: true});
-  }
-
-  onMessageRaw(cb) {
-    this._ch.consume(this._q.queue, (msg) => {
-      return cb(msg);
-    }, {noAck: true});
-  }
-
-
-  onMessageWithAck(cb) {
-    this._ch.consume(q.queue, (msg) => {
-      return cb(msg, () => {
-        this._ch.ack(msg.content.toString())
-      })
-    }, { noAck: false });
-  }
-
-  onMessageRawWithAck(cb) {
-    this._ch.consume(q.queue, (msg) => {
-      return cb(msg, () => {
-        this._ch.ack(msg)
-      })
-    }, { noAck: false });
-  };
 
 }
 

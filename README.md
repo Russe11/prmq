@@ -1,7 +1,9 @@
 # PRMQ
 ### Promise based amqplib wrapper For RabbitMQ and Javascript
 
-Based on https://github.com/squaremo/amqp.node - copyright (c) 2013, 2014 Michael Bridgen <mikeb@squaremobius.net>
+--
+
+#### Based on https://github.com/squaremo/amqp.node by Michael Bridgen
 
 --
 

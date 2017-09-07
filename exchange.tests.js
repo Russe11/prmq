@@ -3,9 +3,14 @@ const expect = chai.expect;
 const PRMQ = require('./index');
 const prmq = new PRMQ('amqp://localhost');
 
-describe("prmq.exchange", function() {
+describe("exchange()", function() {
+
+  before(function() {
+    return prmq.deleteExchange('test_exchange', ['test_queue'])
+  });
+
   it('create and receive message', function(done) {
-    prmq.createExchange('test_exchange')
+    prmq.exchange('test_exchange')
       .then(function(exchange) {
         exchange.subscribe("test_queue", function(message, ack) {
           expect(message.test).to.eq('test message');

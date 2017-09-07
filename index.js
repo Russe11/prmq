@@ -19,6 +19,7 @@
 // SOFTWARE.
 
 const amqp = require('amqplib');
+const P = require('bluebird');
 
 class PRMQ {
 
@@ -31,22 +32,29 @@ class PRMQ {
     this._open = amqp.connect(connectionString)
   }
 
-  createExchange(exchangeName) {
+  exchange(exchangeName) {
     return this._open.then((conn) => {
       return conn.createChannel();
     }).then(ch => {
       return ch.assertExchange(exchangeName, 'fanout', {durable: this._durable})
-        .then(() => {
-          const exchange = new _exchange(ch, exchangeName, this._durable);
-          console.log(exchange)
-          return exchange;
-        });
+        .then(() => new _exchange(ch, exchangeName, this._durable));
     })
   }
 
-  exchange(exchangeName) {
-    return this.createExchange(exchangeName);
+  deleteExchange(exchangeName, queues = []) {
+    return this._open.then((conn) => {
+      return conn.createChannel();
+    }).then(ch => {
+      return P.join(
+        ch.deleteExchange(exchangeName),
+        P.map(queues, (queue) => {
+          return ch.deleteQueue(queue);
+        })
+      );
+    })
   }
+
+
 }
 
 class _exchange {
@@ -69,7 +77,7 @@ class _exchange {
       .then(q => {
         return this._ch.bindQueue(q.queue, this._exchangeName, queueName)
           .then(() => {
-            this._ch.consume(q.queue, function (msg) {
+            this._ch.consume(q.queue, (msg) => {
               onMessage(JSON.parse(msg.content.toString()), () => {
                 this._ch.ack(msg)
               })

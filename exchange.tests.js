@@ -10,18 +10,25 @@ describe("exchange()", function() {
   });
 
   it('create and receive message', function(done) {
-    prmq.exchange('test_exchange')
+
+    prmq.exchange('test_exchange', 'fanout')
       .then(function(exchange) {
-        exchange.subscribe("test_queue", function(message, ack) {
-          expect(message.test).to.eq('test message');
-          ack();
-          done();
-        })
-          .then(function(){
-            return exchange.publish({
-              test: 'test message'
-            });
+        return prmq.queue('test_queue')
+          .then(function(test_queue) {
+            return test_queue
+              .assert()
+              .then(function(){ return test_queue.bindWithExchange(exchange) })
+              .then(function(){
+                test_queue.onMessage(function(message){
+                  console.log(message)
+                  done();
+                });
+              })
           })
-      });
+          .then(function(){
+            exchange.publish({test: 'test message 1'});
+          })
+        });
+
   })
 });

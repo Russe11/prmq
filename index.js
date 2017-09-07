@@ -28,20 +28,46 @@ class PRMQ {
    * @param {boolean} durable
    */
   constructor(connectionString, durable = true) {
-    this._durable = durable;
     this._open = amqp.connect(connectionString)
+    this._ch;
   }
 
-  exchange(exchangeName) {
+  getChannel() {
+    if (this._ch) {
+      return new P((resolve) => resolve(this._ch));
+    }
     return this._open.then((conn) => {
       return conn.createChannel();
-    }).then(ch => {
-      return ch.assertExchange(exchangeName, 'fanout', {durable: this._durable})
-        .then(() => new _exchange(ch, exchangeName, this._durable));
     })
+      .then(ch => {
+        this._ch = ch;
+        return ch;
+      })
   }
 
-  deleteExchange(exchangeName, queues = []) {
+  queue(queueName, options) {
+    return this.getChannel()
+      .then(ch => new Queue(ch, queueName, options));
+  }
+
+  /**
+   * Create a RabbitMQ exchange
+   * @param {string} exchangeName 
+   * @param {*?} options 
+   */
+  exchange(exchangeName, type, options) {
+    return this.getChannel()
+      .then(ch => new Exchange(ch, exchangeName, 'fanout', options))
+        .then(exchange => exchange.assert())
+  }
+
+
+  /**
+   * Remove exchange and queues from RabbitMQ
+   * @param {string} exchangeName 
+   * @param {string[]?} queues 
+   */
+  deleteExchangeAndQueues(exchangeName, queues = []) {
     return this._open.then((conn) => {
       return conn.createChannel();
     }).then(ch => {
@@ -54,14 +80,29 @@ class PRMQ {
     })
   }
 
+  /**
+   * Remove exchange from RabbitMQ
+   * @param {string} exchangeName 
+   */
+  deleteExchange(exchangeName) {
+    return this.deleteExchangeAndQueues(exchangeName)
+  }
 
 }
 
-class _exchange {
-  constructor(ch, exchangeName, durable) {
+
+
+class Exchange {
+  constructor(ch, exchangeName, type, options) {
     this._ch = ch;
     this._exchangeName = exchangeName;
-    this._durable = durable;
+    this._options = options;
+    this._type = type;
+  }
+
+  assert() {
+    return this._ch.assertExchange(this._exchangeName, this._type, this._options)
+      .then(() => this);
   }
 
   /**
@@ -72,8 +113,8 @@ class _exchange {
     return this._ch.deleteExchange(this._exchangeName);
   }
 
-  subscribe(queueName, onMessage) {
-    return this._ch.assertQueue(queueName, {durable: this._durable})
+  subscribe(queueName, options, onMessage) {
+    return this._ch.assertQueue(queueName, options)
       .then(q => {
         return this._ch.bindQueue(q.queue, this._exchangeName, queueName)
           .then(() => {
@@ -86,8 +127,48 @@ class _exchange {
       });
   }
 
+  unsubscribe(queue, options) {
+    return this._ch.unbindQueue
+  }
+
   publish(message) {
     return this._ch.publish(this._exchangeName, '', Buffer.from(JSON.stringify(message)));
+  }
+
+}
+
+class Queue {
+  constructor (ch, queueName, options) {
+    this._ch = ch;
+    this._queueName = queueName;
+    this._options = options;
+
+  }
+
+  assert() {
+
+    return this._ch.assertQueue(this._queueName, this._options)
+      .then(q => {
+        this._q = q;
+      })
+  }
+
+  bindWithExchange(exchange) {
+    return this._ch.bindQueue(this._q.queue, exchange._exchangeName, this._queueName);
+  }
+
+  onMessage(cb) {
+    this._ch.consume(this._q.queue, (msg) => {
+      return cb(msg.content.toString());
+    }, {noAck: true});
+  }
+
+  onMessageWithAck(cb) {
+    this._ch.consume(q.queue, (msg) => {
+      return cb(msg, () => {
+        this._ch.ack(msg.content.toString())
+      })
+    }, { noAck: false });
   }
 
 }

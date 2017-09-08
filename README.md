@@ -22,19 +22,19 @@ const prmq = new PRMQ('amqp://localhost');
 // Create Exchange on RabbitMQ
 prmq.exchange('test_exchange', 'fanout')
   .then(ex =>
-    // Create Queue
+  
+    // Create Queueon RabbitMQ
     prmq.queue('test_queue')
-      .then(q =>
-        P.join(
+      .then(q => P.join(
 
-          // Bind queue with the exchange
-          q.bindWithExchange(ex),
+        // Bind created queue with created exchange
+        q.bindWithExchange(ex),
 
-          // Specify what happens when a message is sent
-          q.onMessageWithAck(processMessage),
-        ))
+        // Specify what happens when a message is sent to queue
+        q.onMessageWithAck(processMessage),
+      ))
 
-      // Publish a message to the exchange
+      // Publish a message to the exchange to test
       .then(() => ex.publish({ test: 'test message 1' })));
 
 const processMessage = (message, ack) => {

@@ -1,19 +1,39 @@
 # PRMQ
 ### Promise based amqplib wrapper For RabbitMQ and Javascript
 
---
-
-#### Based on https://github.com/squaremo/amqp.node by Michael Bridgen
-
---
-
-This software is very much very still in development with current only support for the PubSub pattern
-
-### Current compatible with Node 4 or higher.
+ *Based on https://github.com/squaremo/amqp.node by Michael Bridgen*
 
 ## Usage
 
-To create a basic PubSub exchange
+#### Initialization
+``` Javascript
+const PRMQ = require('prmq');
+const prmq = new PRMQ('amqp://localhost');
+```
+
+### Hello World
+
+Sending
+``` Javascript
+prmq.queue('hello', { durable: false })
+  .then((q) => {
+    q.sendToQueue('Hello World!');
+    console.log(" [x] Sent 'Hello World!'");
+  });
+```
+
+Receiving
+```
+prmq.queue('hello', { durable: false })
+  .then((q) => {
+    console.log(' [*] Waiting for messages in %s. To exit press CTRL+C', q._queueName);
+    q.onMessage((msg) => {
+      console.log(' [x] Received %s', msg);
+    });
+  });
+```
+
+### PubSub
 
 ``` Javascript
 const PRMQ = require('prmq');
@@ -43,6 +63,13 @@ const processMessage = (message, ack) => {
 };
 
 ```
+
+## Todo
+
+* Working Queues
+* Routing
+* Topics
+* RPC
 
 ## License
 

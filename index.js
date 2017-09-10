@@ -26,41 +26,107 @@ const Queue = require('./lib/queue');
 class PRMQ {
   /**
    * @param {string} connectionString
-   * @param {boolean} durable
    */
   constructor(connectionString) {
     this._open = amqp.connect(connectionString);
   }
 
-  getChannel() {
+  /**
+   * Create a RabbitMQ channel
+   * @param {number} prefetch
+   * @returns {Promise.<TResult>}
+   */
+  getChannel(prefetch) {
     if (this._ch) {
       return P.resolve(this._ch);
     }
     return this._open
       .then(conn => conn.createChannel())
       .then((ch) => {
+        if (prefetch) {
+          ch.prefetch(prefetch);
+        }
         this._ch = ch;
         return ch;
       });
   }
 
-  queue(queueName, options) {
-    return this.getChannel()
-      .then(ch => new Queue(ch, queueName, options))
-      .then(q => q.assertQueue())
+  queue(queueName, options = { durable: false, exclusive: false }) {
+    return this._queue(queueName, options);
+  }
+
+  queueExclusive(queueName, options = { exclusive: true }) {
+    options.exclusive = options.exclusive || true;
+    return this._queue(queueName, options);
+  }
+
+  queueDurable(queueName, options = { durable: true }) {
+    options.exclusive = options.exclusive || true;
+    return this._queue(queueName, options);
+  }
+
+  queueDurableExclusive(queueName, options = { durable: true, exclusive: true }) {
+    options.exclusive = options.exclusive || true;
+    options.durable = options.durable || true;
+    return this._queue(queueName, options);
+  }
+
+  sendToQueue(queueName, options = { durable: false, exclusive: false }) {
+    return this._queue(queueName, options);
+  }
+
+  sendToQueueExclusive(queueName, options = { exclusive: true }) {
+    options.exclusive = options.exclusive || true;
+    return this._queue(queueName, options);
+  }
+
+  sendToQueueDurable(queueName, options = { durable: true }) {
+    options.exclusive = options.exclusive || true;
+    return this._queue(queueName, options);
+  }
+
+  sendToQueueDurableExclusive(queueName, options = { durable: true, exclusive: true }) {
+    options.exclusive = options.exclusive || true;
+    options.durable = options.durable || true;
+    return this._queue(queueName, options);
   }
 
   /**
-   * Create a Exchange and assert to RabbitMQ server
-   * @param {string} exchangeName
-   * @param {*?} options
+   * @private
    */
-  exchange(exchangeName, type, options) {
+  _queue(queueName, options) {
+    return this.getChannel()
+      .then(ch => new Queue(ch, queueName, options))
+      .then(q => q.init())
+      .then(q => q.assertQueue());
+  }
+
+  exchangeDirect(exchangeName, options = { durable: false }) {
+    options.durable = options.durable || true;
+    return this._exchange(exchangeName, 'fanout', options)
+  }
+
+  exchangeDirectDurable(exchangeName, options = { durable: true }) {
+    return this._exchange(exchangeName, 'fanout', options)
+  }
+
+  exchangeFanout(exchangeName, options = { durable: false }) {
+    return this._exchange(exchangeName, 'fanout', options)
+  }
+
+  exchangeFanoutDurable(exchangeName, options =  { durable: true }) {
+    options.durable = options.durable || true;
+    return this._exchange(exchangeName, 'fanout', options)
+  }
+
+  /**
+   * @private
+   */
+  _exchange(exchangeName, type, options) {
     return this.getChannel()
       .then(ch => new Exchange(ch, exchangeName, type, options))
       .then(ex => ex.assertExchange());
   }
-
 
 
   /**
@@ -68,13 +134,15 @@ class PRMQ {
    * @param {string} exchangeName
    * @param {string[]?} queues
    */
-  deleteExchangeAndQueues(exchangeName, queues = []) {
+  deleteExchangesAndQueues(exchanges, queues = []) {
+
     return this._open
       .then(conn => conn.createChannel())
-      .then((ch) => P.join(
-        ch.deleteExchange(exchangeName),
+
+      .then((ch) =>
         P.map(queues, queue => ch.deleteQueue(queue))
-      ));
+          .then(() => P.map(exchanges, exchange => ch.deleteExchange(exchange)))
+      )
   }
 
   /**

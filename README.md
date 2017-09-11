@@ -3,7 +3,7 @@
 
  *Based on https://github.com/squaremo/amqp.node by Michael Bridgen*
 
-** This project is still underdevelopment and the API will likely change.**
+** This project is still under heavy development and the API will likely change.**
 
 ## Usage
 
@@ -43,7 +43,6 @@ await ch.queue('task_queue')
     setTimeout(() => {
       console.log(msg);
       ack();
-      done();
     })
   })
   .sendPersistent('Hello World!')
@@ -61,7 +60,6 @@ await ch.queue('')
   .bind(ex)
   .consumeAndGo((msg) => {
     console.log(msg);
-    done();
   });
 
 await ex.publishAndGo('Hello World');
@@ -77,7 +75,6 @@ await ch.queue('')
   .bind(ex)
   .consumeAndGo((msg) => {
     console.log(msg);
-    done();
   });
 
 await ex.publishAndGo('Hello World');

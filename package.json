@@ -4,7 +4,7 @@
   "description": "Promise Based AMPQ Wrapper for JS",
   "main": "index.js",
   "scripts": {
-    "test": "mocha *.tests.js --timeout 40000"
+    "test": "mocha *.tests.js --timeout 6000"
   },
   "repository": {
     "type": "git",

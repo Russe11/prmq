@@ -20,8 +20,7 @@
 
 const amqp = require('amqplib');
 const P = require('bluebird');
-const Exchange = require('./lib/exchange');
-const Queue = require('./lib/queue');
+const Channel = require('./lib/channel');
 
 class PRMQ {
   /**
@@ -34,100 +33,15 @@ class PRMQ {
   /**
    * Create a RabbitMQ channel
    * @param {number} prefetch
-   * @returns {Promise.<TResult>}
    */
-  getChannel(prefetch) {
-    if (this._ch) {
-      return P.resolve(this._ch);
+  async channel(prefetch) {
+    const conn = await this._open;
+    const ch = await conn.createChannel();
+    if (prefetch) {
+      ch.prefetch(prefetch);
     }
-    return this._open
-      .then(conn => conn.createChannel())
-      .then((ch) => {
-        if (prefetch) {
-          ch.prefetch(prefetch);
-        }
-        this._ch = ch;
-        return ch;
-      });
+    return new Channel(ch);
   }
-
-  queue(queueName, options = { durable: false, exclusive: false }) {
-    return this._queue(queueName, options);
-  }
-
-  queueExclusive(queueName, options = { exclusive: true }) {
-    options.exclusive = options.exclusive || true;
-    return this._queue(queueName, options);
-  }
-
-  queueDurable(queueName, options = { durable: true }) {
-    options.exclusive = options.exclusive || true;
-    return this._queue(queueName, options);
-  }
-
-  queueDurableExclusive(queueName, options = { durable: true, exclusive: true }) {
-    options.exclusive = options.exclusive || true;
-    options.durable = options.durable || true;
-    return this._queue(queueName, options);
-  }
-
-  sendToQueue(queueName, options = { durable: false, exclusive: false }) {
-    return this._queue(queueName, options);
-  }
-
-  sendToQueueExclusive(queueName, options = { exclusive: true }) {
-    options.exclusive = options.exclusive || true;
-    return this._queue(queueName, options);
-  }
-
-  sendToQueueDurable(queueName, options = { durable: true }) {
-    options.exclusive = options.exclusive || true;
-    return this._queue(queueName, options);
-  }
-
-  sendToQueueDurableExclusive(queueName, options = { durable: true, exclusive: true }) {
-    options.exclusive = options.exclusive || true;
-    options.durable = options.durable || true;
-    return this._queue(queueName, options);
-  }
-
-  /**
-   * @private
-   */
-  _queue(queueName, options) {
-    return this.getChannel()
-      .then(ch => new Queue(ch, queueName, options))
-      .then(q => q.init())
-      .then(q => q.assertQueue());
-  }
-
-  exchangeDirect(exchangeName, options = { durable: false }) {
-    options.durable = options.durable || true;
-    return this._exchange(exchangeName, 'fanout', options)
-  }
-
-  exchangeDirectDurable(exchangeName, options = { durable: true }) {
-    return this._exchange(exchangeName, 'fanout', options)
-  }
-
-  exchangeFanout(exchangeName, options = { durable: false }) {
-    return this._exchange(exchangeName, 'fanout', options)
-  }
-
-  exchangeFanoutDurable(exchangeName, options =  { durable: true }) {
-    options.durable = options.durable || true;
-    return this._exchange(exchangeName, 'fanout', options)
-  }
-
-  /**
-   * @private
-   */
-  _exchange(exchangeName, type, options) {
-    return this.getChannel()
-      .then(ch => new Exchange(ch, exchangeName, type, options))
-      .then(ex => ex.assertExchange());
-  }
-
 
   /**
    * Remove exchange and queues from RabbitMQ
@@ -143,14 +57,6 @@ class PRMQ {
         P.map(queues, queue => ch.deleteQueue(queue))
           .then(() => P.map(exchanges, exchange => ch.deleteExchange(exchange)))
       )
-  }
-
-  /**
-   * Remove exchange from RabbitMQ
-   * @param {string} exchangeName
-   */
-  deleteExchange(exchangeName) {
-    return this.deleteExchangeAndQueues(exchangeName)
   }
 
 }

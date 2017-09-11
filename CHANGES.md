@@ -1,3 +1,17 @@
+2017-09-11, Version 0.1.0
+=========================
+
+ * Updated README (Russell Lewis)
+
+ * Updated API to be more fluent and async compatible (Russell Lewis)
+
+ * More tests (Russell Lewis)
+
+ * dunno (Russell Lewis)
+
+ * Update README.md (Russell Lewis)
+
+
 2017-09-07, Version 0.0.5
 =========================
 

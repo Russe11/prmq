@@ -39,11 +39,8 @@ https://www.rabbitmq.com/tutorials/tutorial-two-javascript.html
 const ch = await prmq.channel(1);
 await ch.queue('task_queue')
   .consumeWithAck((msg, ack) => {
-    console.log("INC MESSAGE")
-    setTimeout(() => {
-      console.log(msg);
-      ack();
-    })
+    console.log(msg);
+    ack();
   })
   .sendPersistent('Hello World!')
   .go();

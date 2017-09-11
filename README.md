@@ -3,71 +3,88 @@
 
  *Based on https://github.com/squaremo/amqp.node by Michael Bridgen*
 
+** This project is still underdevelopment and the API will likely change.**
+
 ## Usage
 
 #### Initialization
 ``` Javascript
 const PRMQ = require('prmq');
 const prmq = new PRMQ('amqp://localhost');
+const ch = await prmq.channel();
 ```
 
 ### Hello World
+https://www.rabbitmq.com/tutorials/tutorial-five-javascript.html
 
 Sending
 ``` Javascript
-prmq.queue('hello', { durable: false })
-  .then((q) => {
-    q.sendToQueue('Hello World!');
-    console.log(" [x] Sent 'Hello World!'");
+ch.queue('hello')
+  .consumeAndGo((msg) => {
+    console.log("msg");
   });
 ```
 
 Receiving
 ```
-prmq.queue('hello', { durable: false })
-  .then((q) => {
-    console.log(' [*] Waiting for messages in %s. To exit press CTRL+C', q._queueName);
-    q.onMessage((msg) => {
-      console.log(' [x] Received %s', msg);
-    });
-  });
+ch.queue('hello')
+  .sendAndGo('Hello World!');
 ```
 
-### PubSub
+### Worker
+
+https://www.rabbitmq.com/tutorials/tutorial-two-javascript.html
 
 ``` Javascript
-const PRMQ = require('prmq');
-const prmq = new PRMQ('amqp://localhost');
+const ch = await prmq.channel(1);
+await ch.queue('task_queue')
+  .consumeWithAck((msg, ack) => {
+    console.log("INC MESSAGE")
+    setTimeout(() => {
+      expect(msg).to.contain('Hello World!');
+      ack();
+      done();
+    })
+  })
+  .sendPersistent('Hello World!')
+  .go();
+```
 
-// Create Exchange on RabbitMQ
-prmq.exchange('test_exchange', 'fanout')
-  .then(ex =>
-  
-    // Create Queueon RabbitMQ
-    prmq.queue('test_queue')
-      .then(q => P.join(
+### Publish/Subscribe
 
-        // Bind created queue with created exchange
-        q.bindWithExchange(ex),
+https://www.rabbitmq.com/tutorials/tutorial-three-javascript.html
 
-        // Specify what happens when a message is sent to queue
-        q.onMessageWithAck(processMessage),
-      ))
+``` Javascript
+const ex = await ch.exchangeFanout('logs').go();
 
-      // Publish a message to the exchange to test
-      .then(() => ex.publish({ test: 'test message 1' })));
+await ch.queue('')
+  .bind(ex)
+  .consumeAndGo((msg) => {
+    console.log(msg);
+    done();
+  });
 
-const processMessage = (message, ack) => {
-  expect(JSON.parse(message).test).to.eq('test message 1');
-  ack();
-};
+await ex.publishAndGo('Hello World');
+
+```
+
+### Routing
+
+``` Javascript
+const ex = await ch.exchangeFanout('logs').go();
+
+await ch.queue('')
+  .bind(ex)
+  .consumeAndGo((msg) => {
+    console.log(msg);
+    done();
+  });
+
+await ex.publishAndGo('Hello World');
 
 ```
 
 ## Todo
-
-* Working Queues
-* Routing
 * Topics
 * RPC
 

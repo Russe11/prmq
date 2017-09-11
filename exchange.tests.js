@@ -30,7 +30,6 @@ describe('Examples', () => {
           })
           .sendAndGo('Hello World!');
       })
-
   });
 
   it('Worker', (done) => {
@@ -48,7 +47,6 @@ describe('Examples', () => {
           .sendPersistent('Hello World!')
           .go();
       });
-
   });
 
   it('PubSub', (done) => {

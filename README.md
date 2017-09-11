@@ -41,7 +41,7 @@ await ch.queue('task_queue')
   .consumeWithAck((msg, ack) => {
     console.log("INC MESSAGE")
     setTimeout(() => {
-      expect(msg).to.contain('Hello World!');
+      console.log(msg);
       ack();
       done();
     })
@@ -100,6 +100,7 @@ furnished to do so, subject to the following conditions:
 
  The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
+
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,

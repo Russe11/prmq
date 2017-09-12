@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars,no-console,import/no-extraneous-dependencies,padded-blocks */
 const P = require('bluebird');
 const {expect} = require('chai');
-const PRMQ = require('./dist/index');
+const PRMQ = require('./index');
 
 const prmq = new PRMQ('amqp://localhost');
 
@@ -93,7 +93,6 @@ describe('Examples', () => {
     prmq.channel()
       .then(async (ch) => {
         const ex = await ch.exchangeTopic('topic', {durable: false}).exec();
-        console.log(ex);
         await ch.queueExclusive('')
           .bindWithRouting(ex, 'kern.*')
           .consumeRaw(msg => {

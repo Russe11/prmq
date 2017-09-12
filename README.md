@@ -3,9 +3,12 @@
 
  *Based on https://github.com/squaremo/amqp.node by Michael Bridgen*
 
-** This project is still under heavy development and the API will likely change.**
+**This project is still under heavy development and the API will likely change.
+Currently only compatible with Node.js v8 but v6 will come soon**
 
 ## Usage
+
+
 
 All promise chains are queued until ```.exec``` is called at the end.
 
@@ -117,7 +120,11 @@ await ex.publishWithKeyAndExec('A critical kernel error', 'kern.critical');
 ```
 
 ## Todo
-* RPC
+* Node 6 compatibility
+* RPC Support 
+* API Docs
+* JSDoc code
+* Typescript Support
 
 ## License
 

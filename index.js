@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+
 const amqp = require('amqplib');
 const P = require('bluebird');
 const Channel = require('./lib/channel');

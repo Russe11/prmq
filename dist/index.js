@@ -1,6 +1,10 @@
 'use strict';
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 // Copyright (c) 2017 Russell Lewis (russlewis@gmail.com)
 //
@@ -22,15 +26,18 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-const amqp = require('amqplib');
-const P = require('bluebird');
-const Channel = require('./lib/channel');
 
-class PRMQ {
+var amqp = require('amqplib');
+var P = require('bluebird');
+var Channel = require('./lib/channel');
+
+var PRMQ = function () {
   /**
    * @param {string} connectionString
    */
-  constructor(connectionString) {
+  function PRMQ(connectionString) {
+    _classCallCheck(this, PRMQ);
+
     this._open = amqp.connect(connectionString);
   }
 
@@ -38,29 +45,75 @@ class PRMQ {
    * Create a RabbitMQ channel
    * @param {number} prefetch
    */
-  channel(prefetch) {
-    var _this = this;
 
-    return _asyncToGenerator(function* () {
-      const conn = yield _this._open;
-      const ch = yield conn.createChannel();
-      if (prefetch) {
-        ch.prefetch(prefetch);
+
+  _createClass(PRMQ, [{
+    key: 'channel',
+    value: function () {
+      var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(prefetch) {
+        var conn, ch;
+        return regeneratorRuntime.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                _context.next = 2;
+                return this._open;
+
+              case 2:
+                conn = _context.sent;
+                _context.next = 5;
+                return conn.createChannel();
+
+              case 5:
+                ch = _context.sent;
+
+                if (prefetch) {
+                  ch.prefetch(prefetch);
+                }
+                return _context.abrupt('return', new Channel(ch));
+
+              case 8:
+              case 'end':
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function channel(_x) {
+        return _ref.apply(this, arguments);
       }
-      return new Channel(ch);
-    })();
-  }
 
-  /**
-   * Remove exchange and queues from RabbitMQ
-   * @param {string} exchangeName
-   * @param {string[]?} queues
-   */
-  deleteExchangesAndQueues(exchanges, queues = []) {
+      return channel;
+    }()
 
-    return this._open.then(conn => conn.createChannel()).then(ch => P.map(queues, queue => ch.deleteQueue(queue)).then(() => P.map(exchanges, exchange => ch.deleteExchange(exchange))));
-  }
+    /**
+     * Remove exchange and queues from RabbitMQ
+     * @param {string} exchangeName
+     * @param {string[]?} queues
+     */
 
-}
+  }, {
+    key: 'deleteExchangesAndQueues',
+    value: function deleteExchangesAndQueues(exchanges) {
+      var queues = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+
+
+      return this._open.then(function (conn) {
+        return conn.createChannel();
+      }).then(function (ch) {
+        return P.map(queues, function (queue) {
+          return ch.deleteQueue(queue);
+        }).then(function () {
+          return P.map(exchanges, function (exchange) {
+            return ch.deleteExchange(exchange);
+          });
+        });
+      });
+    }
+  }]);
+
+  return PRMQ;
+}();
 
 module.exports = PRMQ;

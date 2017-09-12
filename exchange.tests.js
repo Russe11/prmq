@@ -2,6 +2,7 @@
 const P = require('bluebird');
 const {expect} = require('chai');
 const PRMQ = require('./index');
+import 'babel-polyfill';
 
 const prmq = new PRMQ('amqp://localhost');
 

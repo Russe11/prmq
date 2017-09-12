@@ -11,7 +11,7 @@ const prmq = new PRMQ('amqp://localhost');
 
 describe('Examples', () => {
 
-  beforeEach(() => P.join(prmq.deleteExchangesAndQueues(['test_exchange', 'logs', 'direct_logs', 'topic'], ['test_queue', 'task_queue', 'logs', 'hello'])));
+  beforeEach(() => P.join(prmq.deleteExchangesAndQueues(['test_exchange', 'logs', 'topic', 'direct_logs'], ['test_queue', 'task_queue', 'logs', 'hello'])));
 
   it('HelloWorld', done => {
     prmq.channel().then((() => {

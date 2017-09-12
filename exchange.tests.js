@@ -11,6 +11,7 @@ describe('Examples', () => {
     [
       'test_exchange',
       'logs',
+      'topic',
       'direct_logs'
     ], [
       'test_queue',

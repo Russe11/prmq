@@ -1,4 +1,14 @@
-2017-09-12, Version 0.2.2
+2017-09-12, Version 0.2.3
+=========================
+
+ * remove files (Russell Lewis)
+
+ * Removed files (Russell Lewis)
+
+ * Removed .idea (Russell Lewis)
+
+
+2017-09-11, Version 0.2.2
 =========================
 
  * Node v6.x support (Russell Lewis)

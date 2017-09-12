@@ -1,4 +1,4 @@
-https://travis-ci.org/Russe11/prmq.svg?branch=master
+[![Build Status](https://travis-ci.org/Russe11/prmq.svg?branch=master)](https://travis-ci.org/Russe11/prmq)
 
 # PRMQ
 ### Promise based amqplib wrapper For RabbitMQ and Javascript

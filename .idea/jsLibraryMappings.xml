@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="JavaScriptLibraryMappings">
-    <file url="PROJECT" libraries="{amqp, amqp-DefinitelyTyped, amqplib-DefinitelyTyped, chai-DefinitelyTyped, chai-json-schema-DefinitelyTyped, lodash-DefinitelyTyped, mocha-DefinitelyTyped, node-DefinitelyTyped}" />
-  </component>
-</project>

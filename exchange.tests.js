@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars,no-console,import/no-extraneous-dependencies,padded-blocks */
 const P = require('bluebird');
 const {expect} = require('chai');
-const PRMQ = require('./index');
+const PRMQ = require('./dist/index');
 
 const prmq = new PRMQ('amqp://localhost');
 

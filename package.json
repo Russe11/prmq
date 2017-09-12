@@ -2,10 +2,10 @@
   "name": "prmq",
   "version": "0.2.1",
   "description": "Promise Based AMPQ Wrapper for JS",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "mocha *.tests.js --timeout 6000",
-    "build": "babel index.js lib/* --presets babel-preset-env --out-dir dist"
+    "test": "mocha *.tests.js dist/*.tests.js --timeout 6000",
+    "build": "babel exchange.tests.js lib/* --out-dir dist"
   },
   "repository": {
     "type": "git",
@@ -27,6 +27,7 @@
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-preset-env": "^1.6.0",
+    "babel-preset-node6": "^11.0.0",
     "chai": "^4.1.2",
     "eslint": "^4.6.1",
     "eslint-config-airbnb-base": "^12.0.0",

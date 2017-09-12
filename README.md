@@ -1,3 +1,5 @@
+https://travis-ci.org/Russe11/prmq.svg?branch=master
+
 # PRMQ
 ### Promise based amqplib wrapper For RabbitMQ and Javascript
 

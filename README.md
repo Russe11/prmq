@@ -1,7 +1,7 @@
 [![npm](https://img.shields.io/npm/v/prmq.svg)](https://www.npmjs.com/package/prmq)
 [![Build Status](https://travis-ci.org/Russe11/prmq.svg?branch=master)](https://travis-ci.org/Russe11/prmq)
 [![Dependency Status](https://gemnasium.com/badges/github.com/Russe11/prmq.svg)](https://gemnasium.com/github.com/Russe11/prmq)
-
+[![codecov](https://codecov.io/gh/Russe11/prmq/branch/master/graph/badge.svg)](https://codecov.io/gh/Russe11/prmq)
 
 # PRMQ
 ### Promise based amqplib wrapper For RabbitMQ and Javascript

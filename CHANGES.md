@@ -1,7 +1,17 @@
-2017-09-12, Version 0.2.1
+2017-09-12, Version 0.2.2
+=========================
+
+ * Node v6.x support (Russell Lewis)
+
+ * Added Node 6.x support (Russell Lewis)
+
+
+2017-09-11, Version 0.2.1
 =========================
 
  * Fixed small bug. README.md (Russell Lewis)
+
+ * Made the library ES5 compatible (Russell Lewis)
 
 
 2017-09-11, Version 0.2.0

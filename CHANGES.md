@@ -3,8 +3,6 @@
 
  * Fixed small bug. README.md (Russell Lewis)
 
- * Made the library ES5 compatible (Russell Lewis)
-
 
 2017-09-11, Version 0.2.0
 =========================

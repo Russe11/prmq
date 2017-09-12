@@ -4,7 +4,7 @@
  *Based on https://github.com/squaremo/amqp.node by Michael Bridgen*
 
 **This project is still under heavy development and the API will likely change.
-Currently only compatible with Node.js v8 but v6 will come soon**
+Compatible with Node.js v6 or higher**
 
 ## Usage
 
@@ -120,7 +120,6 @@ await ex.publishWithKeyAndExec('A critical kernel error', 'kern.critical');
 ```
 
 ## Todo
-* Node 6 compatibility
 * RPC Support 
 * API Docs
 * JSDoc code

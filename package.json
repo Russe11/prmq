@@ -4,8 +4,8 @@
   "description": "Promise Based AMPQ Wrapper for JS",
   "main": "dist/index.js",
   "scripts": {
-    "test": "mocha *.tests.js dist/*.tests.js --timeout 6000",
-    "build": "babel exchange.tests.js lib/* --out-dir dist"
+    "test": "npm run build && mocha dist/*.tests.js --timeout 6000",
+    "build": "babel index.js exchange.tests.js lib/* --out-dir dist"
   },
   "repository": {
     "type": "git",
@@ -22,6 +22,7 @@
   "homepage": "https://github.com/Russe11/prmq#readme",
   "dependencies": {
     "amqplib": "^0.5.1",
+    "babel-polyfill": "^6.26.0",
     "bluebird": "^3.5.0"
   },
   "devDependencies": {

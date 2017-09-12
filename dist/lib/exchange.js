@@ -1,6 +1,10 @@
 'use strict';
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 // Copyright (c) 2017 Russell Lewis (russlewis@gmail.com)
 //
@@ -22,8 +26,10 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-class Exchange {
-  constructor(channel, exchangeName, type, options) {
+var Exchange = function () {
+  function Exchange(channel, exchangeName, type, options) {
+    _classCallCheck(this, Exchange);
+
     this._ch = channel;
     this._exchangeName = exchangeName;
     this._options = options;
@@ -31,78 +37,139 @@ class Exchange {
     this._sends = [];
   }
 
-  exec() {
-    var _this = this;
+  _createClass(Exchange, [{
+    key: 'exec',
+    value: function () {
+      var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+        var _this = this;
 
-    return _asyncToGenerator(function* () {
-      if (_this._shouldAssert) {
-        yield _this._ch.assertExchange(_this._exchangeName, _this._type, _this._options);
-        _this._shouldAssert = false;
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                if (!this._shouldAssert) {
+                  _context2.next = 4;
+                  break;
+                }
+
+                _context2.next = 3;
+                return this._ch.assertExchange(this._exchangeName, this._type, this._options);
+
+              case 3:
+                this._shouldAssert = false;
+
+              case 4:
+
+                this._sends.forEach(function () {
+                  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(s) {
+                    var msg;
+                    return regeneratorRuntime.wrap(function _callee$(_context) {
+                      while (1) {
+                        switch (_context.prev = _context.next) {
+                          case 0:
+                            msg = typeof s.message === 'string' ? s.message : JSON.stringify(s.message);
+
+                            if (s.routingKey) {
+                              _context.next = 6;
+                              break;
+                            }
+
+                            _context.next = 4;
+                            return _this._ch.publish(_this._exchangeName, '', Buffer.from(msg));
+
+                          case 4:
+                            _context.next = 8;
+                            break;
+
+                          case 6:
+                            _context.next = 8;
+                            return _this._ch.publish(_this._exchangeName, s.routingKey, Buffer.from(msg));
+
+                          case 8:
+                          case 'end':
+                            return _context.stop();
+                        }
+                      }
+                    }, _callee, _this);
+                  }));
+
+                  return function (_x) {
+                    return _ref2.apply(this, arguments);
+                  };
+                }());
+                this._sends = [];
+                return _context2.abrupt('return', this);
+
+              case 7:
+              case 'end':
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      }));
+
+      function exec() {
+        return _ref.apply(this, arguments);
       }
 
-      _this._sends.forEach((() => {
-        var _ref = _asyncToGenerator(function* (s) {
+      return exec;
+    }()
+  }, {
+    key: 'assert',
+    value: function assert() {
+      this._shouldAssert = this;
+      return this;
+    }
 
-          let msg = typeof s.message === 'string' ? s.message : JSON.stringify(s.message);
+    /**
+     * Delete Exchange
+     * @returns {{exchange, ifUnused, ticket, nowait}|<Replies.Empty>|void}
+     */
 
-          if (!s.routingKey) {
-            yield _this._ch.publish(_this._exchangeName, '', Buffer.from(msg));
-          } else {
-            yield _this._ch.publish(_this._exchangeName, s.routingKey, Buffer.from(msg));
-          }
-        });
+  }, {
+    key: 'delete',
+    value: function _delete() {
+      return this._ch.deleteExchange(this._exchangeName);
+    }
+  }, {
+    key: 'publish',
+    value: function publish(message) {
+      this._sends.push({ message: message });
+      return this;
+    }
+  }, {
+    key: 'publishAndExec',
+    value: function publishAndExec(message) {
+      this._sends.push({ message: message });
+      return this.exec();
+    }
+  }, {
+    key: 'publishWithRoute',
+    value: function publishWithRoute(message, routingKey) {
+      this._sends.push({ message: message, routingKey: routingKey });
+      return this;
+    }
+  }, {
+    key: 'publishWithRouteAndExec',
+    value: function publishWithRouteAndExec(message, routingKey) {
+      this._sends.push({ message: message, routingKey: routingKey });
+      return this.exec();
+    }
+  }, {
+    key: 'publishWithKey',
+    value: function publishWithKey(message, routingKey) {
+      this._sends.push({ message: message, routingKey: routingKey });
+      return this;
+    }
+  }, {
+    key: 'publishWithKeyAndExec',
+    value: function publishWithKeyAndExec(message, routingKey) {
+      this._sends.push({ message: message, routingKey: routingKey });
+      return this.exec();
+    }
+  }]);
 
-        return function (_x) {
-          return _ref.apply(this, arguments);
-        };
-      })());
-      _this._sends = [];
-      return _this;
-    })();
-  }
-
-  assert() {
-    this._shouldAssert = this;
-    return this;
-  }
-
-  /**
-   * Delete Exchange
-   * @returns {{exchange, ifUnused, ticket, nowait}|<Replies.Empty>|void}
-   */
-  delete() {
-    return this._ch.deleteExchange(this._exchangeName);
-  }
-
-  publish(message) {
-    this._sends.push({ message });
-    return this;
-  }
-
-  publishAndExec(message) {
-    this._sends.push({ message });
-    return this.exec();
-  }
-
-  publishWithRoute(message, routingKey) {
-    this._sends.push({ message, routingKey });
-    return this;
-  }
-
-  publishWithRouteAndExec(message, routingKey) {
-    this._sends.push({ message, routingKey });
-    return this.exec();
-  }
-
-  publishWithKey(message, routingKey) {
-    this._sends.push({ message, routingKey });
-    return this;
-  }
-
-  publishWithKeyAndExec(message, routingKey) {
-    this._sends.push({ message, routingKey });
-    return this.exec();
-  }
-}
+  return Exchange;
+}();
 
 module.exports = Exchange;

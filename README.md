@@ -7,6 +7,25 @@
 
 ## Usage
 
+All promise chains are queued until ```.exec``` is called at the end.
+
+So this will not have any affect:
+
+``` javascript
+ch.queue('hello')
+  .consume((msg) => { }); 
+```
+
+until you add ```.exec()```
+
+``` javascript
+ch.queue('hello')
+  .consume((msg) => { })
+  .exec();
+```
+
+
+
 #### Initialization
 ``` Javascript
 const PRMQ = require('prmq');
@@ -14,21 +33,22 @@ const prmq = new PRMQ('amqp://localhost');
 const ch = await prmq.channel();
 ```
 
-### Hello World
+#### Hello World
 https://www.rabbitmq.com/tutorials/tutorial-five-javascript.html
 
 Sending
 ``` Javascript
 ch.queue('hello')
-  .consumeAndGo((msg) => {
+  .consume((msg) => {
     console.log("msg");
-  });
+  })
+  .exec();
 ```
 
 Receiving
 ```
 ch.queue('hello')
-  .sendAndGo('Hello World!');
+  .sendAndExec('Hello World!');
 ```
 
 ### Worker
@@ -38,12 +58,12 @@ https://www.rabbitmq.com/tutorials/tutorial-two-javascript.html
 ``` Javascript
 const ch = await prmq.channel(1);
 await ch.queue('task_queue')
-  .consumeWithAck((msg, ack) => {
+  .consumeWithAck((msg, then) => {
     console.log(msg);
-    ack();
+    then.ack();
   })
   .sendPersistent('Hello World!')
-  .go();
+  .exec();
 ```
 
 ### Publish/Subscribe
@@ -55,11 +75,11 @@ const ex = await ch.exchangeFanout('logs').go();
 
 await ch.queue('')
   .bind(ex)
-  .consumeAndGo((msg) => {
+  .consume((msg) => {
     console.log(msg);
-  });
-
-await ex.publishAndGo('Hello World');
+  })
+  .exec()
+await ex.publishAndExec('Hello World');
 
 ```
 
@@ -70,9 +90,10 @@ const ex = await ch.exchangeFanout('logs').go();
 
 await ch.queue('')
   .bind(ex)
-  .consumeAndGo((msg) => {
+  .consume((msg) => {
     console.log(msg);
-  });
+  })
+  .exec();
 
 await ex.publishAndGo('Hello World');
 
@@ -88,7 +109,8 @@ await ch.queueExclusive('')
   .bindWithRouting(ex, 'kern.*')
   .consumeRaw(msg => {
     console.log(" [x] %s:'%s'", msg.fields.routingKey, msg.content.toString());
-  }).exec();
+  })
+  .exec();
 
 await ex.publishWithKeyAndExec('A critical kernel error', 'kern.critical');
 

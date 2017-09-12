@@ -36,11 +36,10 @@ describe('Examples', () => {
     prmq.channel(1)
       .then(async (ch) => {
         await ch.queue('task_queue')
-          .consumeWithAck((msg, ack) => {
-            console.log("INC MESSAGE")
+          .consumeWithAck((msg, then) => {
             setTimeout(() => {
-              expect(msg).to.contain('Hello World!');
-              ack();
+              expect(msg).to.eq('Hello World!');
+              then.ack();
               done();
             })
           })

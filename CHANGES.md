@@ -1,3 +1,23 @@
+2017-09-12, Version 0.2.4
+=========================
+
+ * Added codecov to README.md (Russell Lewis)
+
+ * Added istambul for codecov (Russell Lewis)
+
+ * Added codecov (Russell Lewis)
+
+ * Update README.md (Russell Lewis)
+
+ * Added Travis Status Badge (Russell Lewis)
+
+ * Updated babel to compile to current node version (Russell Lewis)
+
+ * Added RMQ to travis build (Russell Lewis)
+
+ * Added travis file (Russell Lewis)
+
+
 2017-09-12, Version 0.2.3
 =========================
 

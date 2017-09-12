@@ -1,4 +1,14 @@
-2017-09-11, Version 0.1.0
+2017-09-12, Version 0.2.0
+=========================
+
+ * Updated README.md (Russell Lewis)
+
+ * Added support for topic exchanges (Russell Lewis)
+
+ * Update README.md (Russell Lewis)
+
+
+2017-09-10, Version 0.1.0
 =========================
 
  * Updated README (Russell Lewis)

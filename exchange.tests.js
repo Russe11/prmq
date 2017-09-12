@@ -28,7 +28,7 @@ describe('Examples', () => {
             expect(msg).eq('Hello World!');
             done();
           })
-          .sendAndGo('Hello World!');
+          .sendAndExec('Hello World!');
       })
   });
 
@@ -45,7 +45,7 @@ describe('Examples', () => {
             })
           })
           .sendPersistent('Hello World!')
-          .go();
+          .exec();
       });
   });
 
@@ -53,7 +53,7 @@ describe('Examples', () => {
 
     prmq.channel()
       .then(async (ch) => {
-        const ex = await ch.exchangeFanout('logs').go();
+        const ex = await ch.exchangeFanout('logs').exec();
 
         await ch.queue('')
           .bind(ex)
@@ -61,9 +61,9 @@ describe('Examples', () => {
             expect(msg).to.eq('Hello World');
             done();
           })
-          .go();
+          .exec();
 
-        await ex.publish('Hello World').go();
+        await ex.publish('Hello World').exec();
       });
 
   });
@@ -73,7 +73,7 @@ describe('Examples', () => {
     const severity = 'info';
     prmq.channel()
       .then(async (ch) => {
-        const ex = await ch.exchangeDirect('logs').go();
+        const ex = await ch.exchangeDirect('logs').exec();
         await ch.queueExclusive('')
           .bindWithRoutings(ex, [
             'info',
@@ -83,11 +83,30 @@ describe('Examples', () => {
           .consumeRaw((msg) => {
             console.log(" [x] %s: '%s'", msg.fields.routingKey, msg.content.toString());
             done();
-          }).go();
+          }).exec();
 
-        await ex.publishWithRoute(msg, severity).go();
+        await ex.publishWithRouteAndExec(msg, severity);
       })
   });
+
+  it('Topics', (done) => {
+
+    prmq.channel()
+      .then(async (ch) => {
+        const ex = await ch.exchangeTopic('topic', {durable: false}).exec();
+        console.log(ex);
+        await ch.queueExclusive('')
+          .bindWithRouting(ex, 'kern.*')
+          .consumeRaw(msg => {
+            expect(msg.fields.routingKey).to.equal('kern.critical');
+            expect(msg.content.toString().toString()).to.equal('A critical kernel error');
+            done();
+          }).exec();
+        return await ex.publishWithKeyAndExec('A critical kernel error', 'kern.critical');
+      });
+
+
+  })
 
 });
 

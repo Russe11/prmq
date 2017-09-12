@@ -78,8 +78,23 @@ await ex.publishAndGo('Hello World');
 
 ```
 
+### Topics
+https://www.rabbitmq.com/tutorials/tutorial-five-javascript.html
+
+``` Javascript
+const ex = await ch.exchangeTopic('topic', {durable: false}).exec();
+
+await ch.queueExclusive('')
+  .bindWithRouting(ex, 'kern.*')
+  .consumeRaw(msg => {
+    console.log(" [x] %s:'%s'", msg.fields.routingKey, msg.content.toString());
+  }).exec();
+
+await ex.publishWithKeyAndExec('A critical kernel error', 'kern.critical');
+
+```
+
 ## Todo
-* Topics
 * RPC
 
 ## License

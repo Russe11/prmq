@@ -1,3 +1,17 @@
+2017-09-13, Version 0.3.0
+=========================
+
+ * Updated README.md (Russell Lewis)
+
+ * Removed tests (Russell Lewis)
+
+ * Added more base channel() tests (Russell Lewis)
+
+ * Refined the API. Started working on more tests (Russell Lewis)
+
+ * Removed some helper methods to allow for sensible options (Russell Lewis)
+
+
 2017-09-12, Version 0.2.4
 =========================
 

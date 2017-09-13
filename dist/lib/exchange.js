@@ -145,6 +145,22 @@ var Exchange = function () {
     }
 
     /**
+     * Exchange was created with option { durable: true }
+     * @returns {*|boolean}
+     */
+
+  }, {
+    key: 'isDurable',
+    value: function isDurable() {
+      return this._options && this._options.durable === true;
+    }
+  }, {
+    key: 'getName',
+    value: function getName() {
+      return this._exchangeName;
+    }
+
+    /**
      * Delete Exchange
      * @returns {{exchange, ifUnused, ticket, nowait}|<Replies.Empty>|void}
      */

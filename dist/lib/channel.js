@@ -69,6 +69,21 @@ var Channel = function () {
     }
 
     /**
+     *
+     * @param queueName
+     * @param {Object?} options
+     * @param {boolean} options.ifUnused
+     * @param {boolean} options.ifEmpty
+     * @returns {*|void|<Replies.DeleteQueue>|{queue, ifUnused, ifEmpty, ticket, nowait}}
+     */
+
+  }, {
+    key: 'deleteQueue',
+    value: function deleteQueue(queueName, options) {
+      return this._ch.deleteQueue(queueName, options);
+    }
+
+    /**
      * Create an exchange with 'direct' type
      * @param {string} exchangeName
      * @param {ExchangeOptions} options

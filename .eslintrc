@@ -7,6 +7,7 @@
     "extends": "airbnb-base",
     "rules": {
       "func-names": ["error", "never"],
-      "no-underscore-dangle": "off"
+      "no-underscore-dangle": "off",
+      "no-unused-expressions": "off"
     }
   }

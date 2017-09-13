@@ -156,6 +156,54 @@ var Queue = function () {
 
       return exec;
     }()
+  }, {
+    key: 'getName',
+    value: function getName() {
+      return this._queueName;
+    }
+
+    /**
+     * Queue was created with option { durable: true }
+     * @returns {*|boolean}
+     */
+
+  }, {
+    key: 'isDurable',
+    value: function isDurable() {
+      return this._options && this._options.durable === true;
+    }
+
+    /**
+     * Check if a queue exists
+     * @returns {Promise.<void>}
+     */
+
+  }, {
+    key: 'check',
+    value: function () {
+      var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
+        return regeneratorRuntime.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                _context4.next = 2;
+                return this._ch.checkQueue(this._queueName);
+
+              case 2:
+              case 'end':
+                return _context4.stop();
+            }
+          }
+        }, _callee4, this);
+      }));
+
+      function check() {
+        return _ref4.apply(this, arguments);
+      }
+
+      return check;
+    }()
+
     /**
      * Assert a queue - Channel#assertQueue
      * @returns {Queue}

@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars,no-console,import/no-extraneous-dependencies,padded-blocks */
-import 'babel-polyfill';
+require('babel-polyfill');
 
 const P = require('bluebird');
 const { expect } = require('chai');
@@ -29,7 +29,8 @@ describe('Examples', () => {
             expect(msg).eq('Hello World!');
             done();
           })
-          .sendAndExec('Hello World!');
+          .send('Hello World!')
+          .exec();
       });
   });
 
@@ -44,7 +45,7 @@ describe('Examples', () => {
               done();
             }, 100);
           })
-          .sendPersistent('Hello World!')
+          .send('Hello World!', { persistent: true })
           .exec();
       });
   });

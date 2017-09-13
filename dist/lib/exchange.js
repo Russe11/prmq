@@ -26,6 +26,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+/**
+ * Publish options
+ * @typedef {Object} PublishOptions
+ * @property {string} expiration
+ * @property {string} userId
+ * @property {string|string[]} CC
+ * @property {number} priority
+ * @property {boolean} persistent
+ * @property {boolean|number} deliveryMode
+ */
+
 var Exchange = function () {
   function Exchange(channel, exchangeName, type, options) {
     _classCallCheck(this, Exchange);
@@ -36,6 +47,12 @@ var Exchange = function () {
     this._type = type;
     this._sends = [];
   }
+
+  /**
+   * Execute all actions currently pending on the exchange
+   * @returns {Promise.<Exchange>}
+   */
+
 
   _createClass(Exchange, [{
     key: 'exec',
@@ -114,6 +131,12 @@ var Exchange = function () {
 
       return exec;
     }()
+
+    /**
+     * Assert an exchange - Channel#assertExchange
+     * @returns {Exchange}
+     */
+
   }, {
     key: 'assert',
     value: function assert() {
@@ -127,45 +150,37 @@ var Exchange = function () {
      */
 
   }, {
-    key: 'delete',
-    value: function _delete() {
+    key: 'deleteExchange',
+    value: function deleteExchange() {
       return this._ch.deleteExchange(this._exchangeName);
     }
+
+    /**
+     * Public a message to an exchange - Channel#publish
+     * @param {string|Object} message
+     * @param {PublishOptions?} options
+     * @returns {Exchange}
+     */
+
   }, {
     key: 'publish',
-    value: function publish(message) {
-      this._sends.push({ message: message });
+    value: function publish(message, options) {
+      this._sends.push({ message: message, options: options });
       return this;
     }
+
+    /**
+     * Publish a message to an exchange with a routing key - Channel#publish
+     * @param {string|Object} message
+     * @param {string} routingKey
+     * @returns {Exchange}
+     */
+
   }, {
-    key: 'publishAndExec',
-    value: function publishAndExec(message) {
-      this._sends.push({ message: message });
-      return this.exec();
-    }
-  }, {
-    key: 'publishWithRoute',
-    value: function publishWithRoute(message, routingKey) {
+    key: 'publishWithRoutingKey',
+    value: function publishWithRoutingKey(message, routingKey) {
       this._sends.push({ message: message, routingKey: routingKey });
       return this;
-    }
-  }, {
-    key: 'publishWithRouteAndExec',
-    value: function publishWithRouteAndExec(message, routingKey) {
-      this._sends.push({ message: message, routingKey: routingKey });
-      return this.exec();
-    }
-  }, {
-    key: 'publishWithKey',
-    value: function publishWithKey(message, routingKey) {
-      this._sends.push({ message: message, routingKey: routingKey });
-      return this;
-    }
-  }, {
-    key: 'publishWithKeyAndExec',
-    value: function publishWithKeyAndExec(message, routingKey) {
-      this._sends.push({ message: message, routingKey: routingKey });
-      return this.exec();
     }
   }]);
 

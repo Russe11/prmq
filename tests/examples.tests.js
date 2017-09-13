@@ -1,26 +1,25 @@
 /* eslint-disable no-unused-vars,no-console,import/no-extraneous-dependencies,padded-blocks */
-const P = require('bluebird');
-const {expect} = require('chai');
-const PRMQ = require('./index');
 import 'babel-polyfill';
+
+const P = require('bluebird');
+const { expect } = require('chai');
+const PRMQ = require('../index');
 
 const prmq = new PRMQ('amqp://localhost');
 
 describe('Examples', () => {
 
-  beforeEach(() => P.join(prmq.deleteExchangesAndQueues(
-    [
-      'test_exchange',
-      'logs',
-      'topic',
-      'direct_logs'
-    ], [
-      'test_queue',
-      'task_queue',
-      'logs',
-      'hello',
-    ]
-  )));
+  beforeEach(() => P.join(prmq.deleteExchangesAndQueues([
+    'test_exchange',
+    'logs',
+    'topic',
+    'direct_logs',
+  ], [
+    'test_queue',
+    'task_queue',
+    'logs',
+    'hello',
+  ])));
 
   it('HelloWorld', (done) => {
     prmq.channel()
@@ -31,7 +30,7 @@ describe('Examples', () => {
             done();
           })
           .sendAndExec('Hello World!');
-      })
+      });
   });
 
   it('Worker', (done) => {
@@ -43,7 +42,7 @@ describe('Examples', () => {
               expect(msg).to.eq('Hello World!');
               then.ack();
               done();
-            })
+            }, 100);
           })
           .sendPersistent('Hello World!')
           .exec();
@@ -75,38 +74,41 @@ describe('Examples', () => {
     prmq.channel()
       .then(async (ch) => {
         const ex = await ch.exchangeDirect('logs').exec();
-        await ch.queueExclusive('')
+        await ch.queue('', { exclusive: true })
           .bindWithRoutings(ex, [
             'info',
             'warning',
-            'error'
+            'error',
           ])
           .consumeRaw((msg) => {
-            console.log(" [x] %s: '%s'", msg.fields.routingKey, msg.content.toString());
+            expect(msg.fields.routingKey).to.eq('info');
+            expect(msg.content.toString()).to.eq('Hello World!');
             done();
           }).exec();
 
-        await ex.publishWithRouteAndExec(msg, severity);
-      })
+        await ex.publishWithRoutingKey(msg, severity)
+          .exec();
+      });
   });
 
   it('Topics', (done) => {
 
     prmq.channel()
       .then(async (ch) => {
-        const ex = await ch.exchangeTopic('topic', {durable: false}).exec();
-        await ch.queueExclusive('')
+        const ex = await ch.exchangeTopic('topic', { durable: false }).exec();
+        await ch.queue('', { exclusive: true })
           .bindWithRouting(ex, 'kern.*')
-          .consumeRaw(msg => {
+          .consumeRaw((msg) => {
             expect(msg.fields.routingKey).to.equal('kern.critical');
             expect(msg.content.toString().toString()).to.equal('A critical kernel error');
             done();
           }).exec();
-        return await ex.publishWithKeyAndExec('A critical kernel error', 'kern.critical');
+        return await ex.publishWithRoutingKey('A critical kernel error', 'kern.critical')
+          .exec();
       });
 
 
-  })
+  });
 
 });
 

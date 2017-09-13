@@ -26,7 +26,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-
 var amqp = require('amqplib');
 var P = require('bluebird');
 var Channel = require('./lib/channel');
@@ -43,7 +42,7 @@ var PRMQ = function () {
 
   /**
    * Create a RabbitMQ channel
-   * @param {number} prefetch
+   * @param {number?} prefetch
    */
 
 
@@ -89,7 +88,7 @@ var PRMQ = function () {
 
     /**
      * Remove exchange and queues from RabbitMQ
-     * @param {string} exchangeName
+     * @param {string[]} exchanges
      * @param {string[]?} queues
      */
 
@@ -97,7 +96,6 @@ var PRMQ = function () {
     key: 'deleteExchangesAndQueues',
     value: function deleteExchangesAndQueues(exchanges) {
       var queues = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
-
 
       return this._open.then(function (conn) {
         return conn.createChannel();

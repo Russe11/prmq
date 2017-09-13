@@ -18,7 +18,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-
 const amqp = require('amqplib');
 const P = require('bluebird');
 const Channel = require('./lib/channel');
@@ -33,7 +32,7 @@ class PRMQ {
 
   /**
    * Create a RabbitMQ channel
-   * @param {number} prefetch
+   * @param {number?} prefetch
    */
   async channel(prefetch) {
     const conn = await this._open;
@@ -46,20 +45,16 @@ class PRMQ {
 
   /**
    * Remove exchange and queues from RabbitMQ
-   * @param {string} exchangeName
+   * @param {string[]} exchanges
    * @param {string[]?} queues
    */
   deleteExchangesAndQueues(exchanges, queues = []) {
-
     return this._open
       .then(conn => conn.createChannel())
-
-      .then((ch) =>
+      .then(ch =>
         P.map(queues, queue => ch.deleteQueue(queue))
-          .then(() => P.map(exchanges, exchange => ch.deleteExchange(exchange)))
-      )
+          .then(() => P.map(exchanges, exchange => ch.deleteExchange(exchange))));
   }
-
 }
 
 module.exports = PRMQ;

@@ -56,7 +56,8 @@ ch.queue('hello')
 Receiving
 ```
 ch.queue('hello')
-  .sendAndExec('Hello World!');
+  .send('Hello World!')
+  .exec();
 ```
 
 ### Worker
@@ -87,7 +88,9 @@ await ch.queue('')
     console.log(msg);
   })
   .exec()
-await ex.publishAndExec('Hello World');
+  
+await ex.publish('Hello World')
+  .exec();
 
 ```
 
@@ -103,7 +106,8 @@ await ch.queue('')
   })
   .exec();
 
-await ex.publishAndGo('Hello World');
+await ex.publish('Hello World')
+  .exec();
 
 ```
 
@@ -111,16 +115,18 @@ await ex.publishAndGo('Hello World');
 https://www.rabbitmq.com/tutorials/tutorial-five-javascript.html
 
 ``` Javascript
-const ex = await ch.exchangeTopic('topic', {durable: false}).exec();
+const ex = await ch.exchangeTopic('topic', {durable: false})
+  .exec();
 
-await ch.queueExclusive('')
+await ch.queue('', { exclusive: true })
   .bindWithRouting(ex, 'kern.*')
   .consumeRaw(msg => {
     console.log(" [x] %s:'%s'", msg.fields.routingKey, msg.content.toString());
   })
   .exec();
 
-await ex.publishWithKeyAndExec('A critical kernel error', 'kern.critical');
+await ex.publishWithRoutingKey('A critical kernel error', 'kern.critical')
+  .exec();
 
 ```
 

@@ -4,8 +4,8 @@
   "description": "Promise Based AMPQ Wrapper for JS",
   "main": "dist/index.js",
   "scripts": {
-    "test": "npm run build && istanbul cover ./node_modules/mocha/bin/_mocha dist/*.tests.js --timeout 6000 --report lcovonly -- -R spec && codecov",
-    "build": "babel index.js exchange.tests.js lib/* --out-dir dist"
+    "test": "rm -rf dist && npm run build && istanbul cover ./node_modules/mocha/bin/_mocha dist/**/*.tests.js --timeout 6000 --report lcovonly -- -R spec && codecov",
+    "build": "babel index.js tests/* lib/* --out-dir dist"
   },
   "repository": {
     "type": "git",

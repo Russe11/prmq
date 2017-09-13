@@ -42,6 +42,23 @@ var Queue = function () {
     this._binds = [];
   }
 
+  /**
+   * Send options
+   * @typedef {Object} SendQueueOptions
+   * @property {string} expiration
+   * @property {string} userId
+   * @property {string|string[]} CC
+   * @property {number} priority
+   * @property {boolean} persistent
+   * @property {boolean|number} deliveryMode
+   */
+
+  /**
+   * Execute all actions currently pending on the queue
+   * @returns {Promise.<Queue>}
+   */
+
+
   _createClass(Queue, [{
     key: 'exec',
     value: function () {
@@ -139,36 +156,30 @@ var Queue = function () {
 
       return exec;
     }()
+    /**
+     * Assert a queue - Channel#assertQueue
+     * @returns {Queue}
+     */
+
   }, {
     key: 'assert',
     value: function assert() {
       this._shouldAssert = true;
       return this;
     }
+
+    /**
+     * Send a message to a queue
+     * @param {string|object} message
+     * @param {SendQueueOptions} options
+     * @returns {Queue}
+     */
+
   }, {
     key: 'send',
     value: function send(message) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-      options.persistent = options.persistent || false;
-      this._send(message, options);
-      return this;
-    }
-  }, {
-    key: 'sendAndExec',
-    value: function sendAndExec(message) {
-      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-      options.persistent = options.persistent || false;
-      this._send(message, options);
-      return this.exec();
-    }
-  }, {
-    key: 'sendPersistent',
-    value: function sendPersistent(message) {
-      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-      options.persistent = options.persistent || true;
       this._send(message, options);
       return this;
     }
@@ -183,6 +194,18 @@ var Queue = function () {
       this._binds.push({ exchangeName: exchange._exchangeName, routing: routing });
       return this;
     }
+
+    /**
+     * @param {Exchange} exchange
+     * @param {string} routing
+     */
+
+  }, {
+    key: 'bindWithRouting',
+    value: function bindWithRouting(exchange, routing) {
+      this._binds.push({ exchangeName: exchange._exchangeName, routing: routing });
+      return this;
+    }
   }, {
     key: 'bindWithRoutings',
     value: function bindWithRoutings(exchange, routings) {
@@ -193,29 +216,11 @@ var Queue = function () {
       });
       return this;
     }
-
-    /**
-     * @param {string} routing
-     * @returns {<Replies.Empty> | void | {queue, exchange, routing, arguments, ticket, nowait}}
-     */
-
-  }, {
-    key: 'bindWithRouting',
-    value: function bindWithRouting(exchange, routing) {
-      this._binds.push({ exchangeName: exchange._exchangeName, routing: routing });
-      return this;
-    }
   }, {
     key: 'consume',
     value: function consume(cb) {
       this._consumers.push({ noAck: true, raw: false, cb: cb });
       return this;
-    }
-  }, {
-    key: 'consumeAndExec',
-    value: function consumeAndExec(cb) {
-      this._consumers.push({ noAck: true, raw: false, cb: cb });
-      return this.exec();
     }
   }, {
     key: 'consumeRaw',
@@ -229,12 +234,38 @@ var Queue = function () {
       this._consumers.push({ noAck: false, raw: false, cb: cb });
       return this;
     }
+
+    /**
+     * Consume
+     * @param cb
+     * @returns {Queue}
+     */
+
   }, {
     key: 'consumeRawWithAck',
     value: function consumeRawWithAck(cb) {
       this._consumers.push({ noAck: false, raw: true, cb: cb });
       return this;
     }
+
+    /**
+     * Channel Prefetch - channel#prefetch
+     * @param count
+     * @returns {Queue}
+     */
+
+  }, {
+    key: 'prefetch',
+    value: function prefetch(count) {
+      this._ch.prefetch(count);
+      return this;
+    }
+
+    /**
+     * @returns {Queue}
+     * @private
+     */
+
   }, {
     key: '_consume',
     value: function _consume(cb) {
@@ -246,6 +277,12 @@ var Queue = function () {
       }, { noAck: true });
       return this;
     }
+
+    /**
+     * @param cb
+     * @private
+     */
+
   }, {
     key: '_consumeWithAck',
     value: function _consumeWithAck(cb) {
@@ -258,6 +295,13 @@ var Queue = function () {
         }
       }, { noAck: false });
     }
+
+    /**
+     * @param cb
+     * @returns {Queue}
+     * @private
+     */
+
   }, {
     key: '_consumeRaw',
     value: function _consumeRaw(cb) {
@@ -270,6 +314,13 @@ var Queue = function () {
       }, { noAck: true });
       return this;
     }
+
+    /**
+     * @param cb
+     * @returns {Queue}
+     * @private
+     */
+
   }, {
     key: '_consumeRawWithAck',
     value: function _consumeRawWithAck(cb) {
@@ -280,12 +331,6 @@ var Queue = function () {
           _this5._ch.ack(msg);
         });
       }, { noAck: false });
-      return this;
-    }
-  }, {
-    key: 'prefetch',
-    value: function prefetch(count) {
-      this._ch.prefetch(count);
       return this;
     }
   }]);

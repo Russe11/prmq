@@ -12,11 +12,21 @@ var ConsumeThen = function () {
     this._msg = msg;
   }
 
+  /**
+   * Acknowledge the message - Channel#ack
+   */
+
+
   _createClass(ConsumeThen, [{
     key: "ack",
     value: function ack() {
       this._ch.ack(this._msg);
     }
+
+    /**
+     * Reject a message - Channel#nack
+     */
+
   }, {
     key: "nack",
     value: function nack() {
@@ -24,6 +34,11 @@ var ConsumeThen = function () {
 
       this._ch.nack(this._msg, requeue);
     }
+
+    /**
+     * Reject a message - Channel#reject
+     */
+
   }, {
     key: "reject",
     value: function reject() {

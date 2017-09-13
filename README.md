@@ -71,7 +71,7 @@ await ch.queue('task_queue')
     console.log(msg);
     then.ack();
   })
-  .sendPersistent('Hello World!')
+  .send('Hello World!', { persistant: true })
   .exec();
 ```
 

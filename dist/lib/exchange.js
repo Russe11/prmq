@@ -38,6 +38,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  */
 
 var Exchange = function () {
+  /**
+   *
+   * @param {Channel} channel
+   * @param {string} exchangeName
+   * @param {string} type
+   * @param {object} options
+   */
   function Exchange(channel, exchangeName, type, options) {
     _classCallCheck(this, Exchange);
 
@@ -145,6 +152,50 @@ var Exchange = function () {
     }
 
     /**
+     * Get the name of the exchange
+     * @returns {string}
+     */
+
+  }, {
+    key: 'getName',
+    value: function getName() {
+      return this._exchangeName;
+    }
+
+    /**
+     * Is exchange of type = fanout
+     * @returns {boolean}
+     */
+
+  }, {
+    key: 'isFanoutExchange',
+    value: function isFanoutExchange() {
+      return this._type === 'fanout';
+    }
+
+    /**
+     * Is exchange of type = direct
+     * @returns {boolean}
+     */
+
+  }, {
+    key: 'isDirectExchange',
+    value: function isDirectExchange() {
+      return this._type === 'direct';
+    }
+
+    /**
+     * Is exchange of type = topic
+     * @returns {boolean}
+     */
+
+  }, {
+    key: 'isTopicExchange',
+    value: function isTopicExchange() {
+      return this._type === 'topic';
+    }
+
+    /**
      * Exchange was created with option { durable: true }
      * @returns {*|boolean}
      */
@@ -153,11 +204,6 @@ var Exchange = function () {
     key: 'isDurable',
     value: function isDurable() {
       return this._options && this._options.durable === true;
-    }
-  }, {
-    key: 'getName',
-    value: function getName() {
-      return this._exchangeName;
     }
 
     /**

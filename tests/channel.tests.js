@@ -33,13 +33,35 @@ describe('Channels', () => {
     });
   });
 
-  describe('exchangeFanout', () => {
-    it('should setup a exchange with type fanout', () =>
+  describe('exchangeFanout()', () => {
+    it('should setup a exchange with type = fanout', () =>
       prmq.channel()
         .then(ch => ch.exchangeFanout('prmqTestExchange'))
         .then((ex) => {
           expect(ex.getName()).to.equal('prmqTestExchange');
+          expect(ex.isFanoutExchange()).to.be.true;
         }));
   });
+
+  describe('exchangeDirect()', () => {
+    it('should setup a exchange with type = direct', () =>
+      prmq.channel()
+        .then(ch => ch.exchangeDirect('prmqTestExchange'))
+        .then((ex) => {
+          expect(ex.getName()).to.equal('prmqTestExchange');
+          expect(ex.isDirectExchange()).to.be.true;
+        }));
+  });
+
+  describe('exchangeTopic()', () => {
+    it('should setup a exchange with type = topic', () =>
+      prmq.channel()
+        .then(ch => ch.exchangeTopic('prmqTestExchange'))
+        .then((ex) => {
+          expect(ex.getName()).to.equal('prmqTestExchange');
+          expect(ex.isTopicExchange()).to.be.true;
+        }));
+  });
+
 });
 

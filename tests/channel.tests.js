@@ -63,5 +63,12 @@ describe('Channels', () => {
         }));
   });
 
+  describe('close()', () => {
+    it('should close the channel', async () => {
+      const ch = await prmq.channel();
+      await ch.close();
+      expect(ch.isClosed()).to.be.true;
+    });
+  });
 });
 

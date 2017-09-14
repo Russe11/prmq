@@ -1,7 +1,11 @@
-/* eslint-disable no-unused-vars,no-console,import/no-extraneous-dependencies,padded-blocks */
+/* eslint-disable no-unused-vars,no-console,import/no-extraneous-dependencies,padded-blocks,prefer-destructuring */
 require('babel-polyfill');
 
-const { expect } = require('chai');
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
+
+chai.use(chaiAsPromised);
+const expect = chai.expect;
 const PRMQ = require('../index');
 
 const prmq = new PRMQ('amqp://localhost');
@@ -68,6 +72,37 @@ describe('Channels', () => {
       const ch = await prmq.channel();
       await ch.close();
       expect(ch.isClosed()).to.be.true;
+    });
+  });
+
+  describe('checkQueue()', () => {
+
+    beforeEach(async () => {
+      const ch = await prmq.channel();
+      return ch.deleteQueues([
+        'prmqCheckQueue',
+      ]);
+    });
+
+    it('should confirm a queue exists by Queue object', async () => {
+      const ch = await prmq.channel();
+      const q = await ch.queue('prmqCheckQueue');
+      await q.exec();
+      await ch.checkQueue(q);
+    });
+
+    it('should confirm a queue exists by queue name', async () => {
+      const ch = await prmq.channel();
+      const q = await ch.queue('prmqCheckQueue');
+      await q.exec();
+      await ch.checkQueue('prmqCheckQueue');
+    });
+
+    it('should throw an error when a Queue object does not exist', async () => {
+      const ch = await prmq.channel();
+      const q = await ch.queue('prmqCheckQueue');
+      await q.exec();
+      expect(ch.checkQueue('prmqCheckQueueNotExist')).to.be.rejected;
     });
   });
 });

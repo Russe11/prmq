@@ -1,3 +1,9 @@
+2017-09-14, Version 0.3.3
+=========================
+
+ * Added babel-cli to packages (Russell Lewis)
+
+
 2017-09-14, Version 0.3.2
 =========================
 

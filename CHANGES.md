@@ -1,4 +1,14 @@
-2017-09-13, Version 0.3.0
+2017-09-14, Version 0.3.1
+=========================
+
+ * Added install phase to package.json (Russell Lewis)
+
+ * Added channel.checkQueue() (Russell Lewis)
+
+ * Added channel.close() method (Russell Lewis)
+
+
+2017-09-12, Version 0.3.0
 =========================
 
  * Updated README.md (Russell Lewis)

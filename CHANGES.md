@@ -1,3 +1,9 @@
+2017-09-14, Version 0.3.2
+=========================
+
+ * Moved babed to postinstall script (Russell Lewis)
+
+
 2017-09-14, Version 0.3.1
 =========================
 

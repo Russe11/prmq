@@ -1,3 +1,12 @@
+2017-09-14, Version 0.3.5
+=========================
+
+ * Trying to fix postinstall babel transpile (Russell Lewis)
+
+
+2017-09-14, Version 0.3.4
+=========================
+
 
 
 2017-09-14, Version 0.3.3

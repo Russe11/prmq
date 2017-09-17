@@ -5,9 +5,13 @@ import * as P from 'bluebird';
 import { expect } from 'chai';
 import { PRMQ } from '../PRMQ'
 
-const prmq = new PRMQ('amqp://localhost');
+let prmq;
 
 describe('Examples', () => {
+
+  before(() => {
+    prmq  = new PRMQ('amqp://localhost');
+  });
 
   beforeEach(() => P.join(prmq.deleteExchangesAndQueues([
     'test_exchange',

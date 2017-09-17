@@ -14,7 +14,7 @@
     "ban": false,
     "callable-types": true,
     "chai-prefer-contains-to-index-of": true,
-    "chai-vague-errors": true,
+    "chai-vague-errors": false,
     "class-name": true,
     "comment-format": [
       false

@@ -26,14 +26,14 @@ describe('Channels', () => {
         .then(ch => ch.queue('prmqTestQueue', { durable: true }))
         .then((q) => {
           expect(q.queueName).to.eq('prmqTestQueue');
-          expect(q.isDurable()).to.be.true;
+          expect(q.isDurable()).to.eq(true);
         }));
 
     it('should queue up a assertion on a queue', () =>
       prmq.channel()
         .then((ch) => {
           const q = ch.queue('prmqTestQueue', { durable: true });
-          expect(q.shouldAssert).to.be.true;
+          expect(q.shouldAssert).to.eq(true);
         }));
 
     it('should create a queue on RabbitMQ server', async () => {
@@ -51,7 +51,7 @@ describe('Channels', () => {
         .then(ch => ch.exchangeFanout('prmqTestExchange'))
         .then((ex) => {
           expect(ex.getName()).to.equal('prmqTestExchange');
-          expect(ex.isFanoutExchange()).to.be.true;
+          expect(ex.isFanoutExchange()).to.eq('true');
         }));
   });
 
@@ -61,7 +61,7 @@ describe('Channels', () => {
         .then(ch => ch.exchangeDirect('prmqTestExchange'))
         .then((ex) => {
           expect(ex.getName()).to.equal('prmqTestExchange');
-          expect(ex.isDirectExchange()).to.be.true;
+          expect(ex.isFanoutExchange()).to.eq('true');
         }));
   });
 
@@ -71,7 +71,7 @@ describe('Channels', () => {
         .then(ch => ch.exchangeTopic('prmqTestExchange'))
         .then((ex) => {
           expect(ex.getName()).to.equal('prmqTestExchange');
-          expect(ex.isTopicExchange()).to.be.true;
+          expect(ex.isTopicExchange()).to.eq(true);
         }));
   });
 
@@ -79,7 +79,7 @@ describe('Channels', () => {
     it('should close the channel', async () => {
       const ch = await prmq.channel();
       await ch.close();
-      expect(ch.isClosed()).to.be.true;
+      expect(ch.isClosed()).to.eq(true);
     });
   });
 
@@ -88,7 +88,7 @@ describe('Channels', () => {
     beforeEach(async () => {
       const ch = await prmq.channel();
       return ch.deleteQueues([
-        'prmqCheckQueue',
+        'prmqCheckQueue'
       ]);
     });
 
@@ -114,4 +114,3 @@ describe('Channels', () => {
     });
   });
 });
-

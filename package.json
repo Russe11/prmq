@@ -6,7 +6,7 @@
   "scripts": {
     "test": "rm -rf dist && tsc && istanbul cover ./node_modules/mocha/bin/_mocha dist/**/*.tests.js --timeout 6000 --report lcovonly -- -R spec && codecov",
     "build": "rm -rf dist && tsc",
-    "postinstall": "postinstall-build dist"
+    "prepublishOnly": "tsc"
   },
   "repository": {
     "type": "git",
@@ -41,6 +41,7 @@
     "eslint-plugin-import": "^2.7.0",
     "istanbul": "^0.4.5",
     "mocha": "^3.5.3",
+    "tslint": "^5.7.0",
     "typescript": "^2.5.2"
   }
 }

@@ -18,33 +18,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+/**
+ * PRMQ Library
+ */
+
 import * as amqp from 'amqplib';
 import * as P from 'bluebird';
-import { PRMQChannel } from './lib/channel';
-import { PRMQExchange } from "./lib/exchange";
-import { PRMQQueue } from "./lib/queue";
-import { PRMQConsumeThen } from "./lib/consumeThen";
 
-export { PRMQChannel, PRMQExchange, PRMQQueue, PRMQConsumeThen }
+import { PRMQChannel } from './lib/PRMQChannel';
+import { PRMQExchange } from './lib/PRMQExchange';
+import { PRMQQueue } from './lib/PRMQQueue';
+import { PRMQConsumeThen } from './lib/PRMQConsumeThen';
+
+import {Connection, Replies} from 'amqplib';
+
+export { PRMQChannel, PRMQExchange, PRMQQueue, PRMQConsumeThen };
 
 export class PRMQ {
 
-  private _open;
-
+  private open: P<Connection>;
 
   constructor(connectionString?: string) {
-    this._open = amqp.connect(connectionString);
+    this.open = amqp.connect(connectionString);
   }
 
   /**
    * Create a RabbitMQ channel
    * @param {number?} prefetch
    */
-  async channel(prefetch?) {
-    const conn = await this._open;
+  public async channel(prefetch?: number) {
+    const conn = await this.open;
     const ch = await conn.createChannel();
     if (prefetch) {
-      ch.prefetch(prefetch);
+      await ch.prefetch(prefetch);
     }
     return new PRMQChannel(ch);
   }
@@ -54,12 +60,11 @@ export class PRMQ {
    * @param {string[]} exchanges
    * @param {string[]?} queues
    */
-  deleteExchangesAndQueues(exchanges, queues = []) {
-    var output = this._open
+  public deleteExchangesAndQueues(exchanges: string[], queues: string[] = []) : Replies.Empty {
+    return this.open
       .then(conn => conn.createChannel())
       .then(ch =>
         P.map(queues, queue => ch.deleteQueue(queue))
           .then(() => P.map(exchanges, exchange => ch.deleteExchange(exchange))));
-    return output;
   }
 }

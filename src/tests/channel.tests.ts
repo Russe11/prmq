@@ -1,15 +1,24 @@
 /* eslint-disable no-unused-vars,no-console,import/no-extraneous-dependencies,padded-blocks,prefer-destructuring */
+
+/**
+ * PRMQChannel Tests
+ */
+
 import {} from 'mocha';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {PRMQ} from '../index';
+import {PRMQ} from '../PRMQ';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-const prmq = new PRMQ('amqp://localhost');
+let prmq;
 
 describe('Channels', () => {
+
+  before(() => {
+    prmq  = new PRMQ('amqp://localhost');
+  });
 
   describe('queue()', () => {
     it('should setup a queue', () =>
@@ -17,7 +26,7 @@ describe('Channels', () => {
         .then(ch => ch.queue('prmqTestQueue', { durable: true }))
         .then((q) => {
           expect(q.queueName).to.eq('prmqTestQueue');
-          expect(q.durable).to.be.true;
+          expect(q.isDurable()).to.be.true;
         }));
 
     it('should queue up a assertion on a queue', () =>
@@ -32,7 +41,7 @@ describe('Channels', () => {
       const q = ch.queue('prmqTestQueue');
       await q.exec();
       await q.check();
-      await ch.deleteQueue('prmqTestQueue',);
+      await ch.deleteQueue('prmqTestQueue');
     });
   });
 

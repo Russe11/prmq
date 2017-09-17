@@ -18,8 +18,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import {Channel, Options, Replies} from "amqplib";
-import * as Bluebird from 'bluebird'
+/**
+ * PRMQ Exchange
+ */
+
+import {Channel, Options, Replies} from 'amqplib';
+import * as Bluebird from 'bluebird';
 
 export enum PRMQExchangeTypes {
   Fanout = 'fanout',
@@ -28,115 +32,107 @@ export enum PRMQExchangeTypes {
 }
 
 export class PRMQExchange {
+  private sends: any[];
+  private shouldAssert: boolean = false;
 
-  private _ch: Channel;
-  private _exchangeName: string;
-  private _options: any;
-  private _type: PRMQExchangeTypes;
-  private _sends: Array<any>;
-  private _shouldAssert = false;
-
-
-  constructor(channel, exchangeName, type, options) {
-    this._ch = channel;
-    this._exchangeName = exchangeName;
-    this._options = options;
-    this._type = type;
-    this._sends = [];
+  constructor(
+    private channel: Channel,
+    private exchangeName: string,
+    private exchangeType: PRMQExchangeTypes,
+    private options?: Options.AssertExchange) {
+    this.sends = [];
   }
 
   public get ExchangeName() {
-    return this._exchangeName;
+    return this.exchangeName;
   }
 
   /**
    * Execute all actions currently pending on the exchange
    * @returns {Promise.<this>}
    */
-  async exec() {
-    if (this._shouldAssert) {
-      await this._ch.assertExchange(this._exchangeName, this._type, this._options);
-      this._shouldAssert = false;
+  public async exec() {
+    if (this.shouldAssert) {
+      await this.channel.assertExchange(this.exchangeName, this.exchangeType, this.options);
+      this.shouldAssert = false;
     }
 
-    this._sends.forEach(async (s) => {
+    this.sends.forEach(async (s) => {
       const msg = typeof s.message === 'string' ? s.message : JSON.stringify(s.message);
       if (!s.routingKey) {
-        await this._ch.publish(this._exchangeName, '', Buffer.from(msg));
+        await this.channel.publish(this.exchangeName, '', Buffer.from(msg));
       } else {
-        await this._ch.publish(this._exchangeName, s.routingKey, Buffer.from(msg));
+        await this.channel.publish(this.exchangeName, s.routingKey, Buffer.from(msg));
       }
     });
-    this._sends = [];
+    this.sends = [];
     return this;
   }
 
   /**
    * Assert an exchange - Channel#assertExchange
    */
-  assert() {
-    this._shouldAssert = true;
+  public assert() {
+    this.shouldAssert = true;
     return this;
   }
 
   /**
    * Get the name of the exchange
    */
-  getName() {
-    return this._exchangeName;
+  public getName() {
+    return this.exchangeName;
   }
 
   /**
    * Is exchange of type = fanout
-   * @returns {boolean}
    */
-  isFanoutExchange() {
-    return this._type === PRMQExchangeTypes.Fanout;
+  public isFanoutExchange() {
+    return this.exchangeType === PRMQExchangeTypes.Fanout;
   }
 
   /**
    * Is exchange of type = direct
-   * @returns {boolean}
    */
-  isDirectExchange() {
-    return this._type === PRMQExchangeTypes.Direct;
+  public isDirectExchange() {
+    return this.exchangeType === PRMQExchangeTypes.Direct;
   }
 
   /**
    * Is exchange of type = topic
    * @returns {boolean}
    */
-  isTopicExchange() {
-    return this._type === PRMQExchangeTypes.Topic;
+  public isTopicExchange() {
+    return this.exchangeType === PRMQExchangeTypes.Topic;
   }
 
   /**
    * Exchange was created with option { durable: true }
    */
   public get durable() {
-    return this._options && this._options.durable === true;
+    return this.options && this.options.durable === true;
   }
 
   /**
  * Delete Exchange
  */
-deleteExchange(): Bluebird<Replies.Empty> {
-  return this._ch.deleteExchange(this._exchangeName);
-}
+  public deleteExchange(): Bluebird<Replies.Empty> {
+    return this.channel.deleteExchange(this.exchangeType);
+  }
 
   /**
    * Public a message to an exchange - Channel#publish
    */
-  publish(message: any, options?: Options.Publish) {
-    this._sends.push({ message, options });
+  public publish(message: any, options?: Options.Publish) {
+    this.sends.push({ message, options });
     return this;
   }
 
   /**
    * Publish a message to an exchange with a routing key - Channel#publish
    */
-  publishWithRoutingKey(message: any, routingKey: string, options?: Options.Publish) {
-    this._sends.push({ message, routingKey, options });
+  public publishWithRoutingKey(message: any, routingKey: string, options?: Options.Publish) {
+    this.sends.push({ message, routingKey, options });
     return this;
   }
 }

@@ -3,7 +3,7 @@
 import {} from 'mocha';
 import * as P from 'bluebird';
 import { expect } from 'chai';
-import { PRMQ } from '../index'
+import { PRMQ } from '../PRMQ'
 
 const prmq = new PRMQ('amqp://localhost');
 

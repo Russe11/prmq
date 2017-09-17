@@ -1,4 +1,8 @@
-import {Channel} from "amqplib";
+/**
+ * PRMQ Consume Then
+ */
+
+import {Channel} from 'amqplib';
 
 export class PRMQConsumeThen {
 
@@ -8,21 +12,21 @@ export class PRMQConsumeThen {
   /**
    * Acknowledge the message - Channel#ack
    */
-  ack() {
+  public ack() {
     this.ch.ack(this.msg);
   }
 
   /**
    * Reject a message - Channel#nack
    */
-  nack(requeue = false) {
+  public nack(requeue: boolean = false) {
     this.ch.nack(this.msg, requeue);
   }
 
   /**
    * Reject a message - Channel#reject
    */
-  reject(requeue = false) {
+  public reject(requeue: boolean = false) {
     this.ch.reject(this.msg, requeue);
   }
 }

@@ -61,7 +61,7 @@ describe('Channels', () => {
         .then(ch => ch.exchangeDirect('prmqTestExchange'))
         .then((ex) => {
           expect(ex.getName()).to.equal('prmqTestExchange');
-          expect(ex.isFanoutExchange()).to.eq(true);
+          expect(ex.isDirectExchange()).to.eq(true);
         }));
   });
 

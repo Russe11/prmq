@@ -1,12 +1,11 @@
 /* eslint-disable no-unused-vars,no-console,import/no-extraneous-dependencies,padded-blocks,prefer-destructuring */
-require('babel-polyfill');
-
-const chai = require('chai');
-const chaiAsPromised = require('chai-as-promised');
+import {} from 'mocha';
+import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
+import {PRMQ} from '../index';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
-const PRMQ = require('../index');
 
 const prmq = new PRMQ('amqp://localhost');
 
@@ -17,15 +16,15 @@ describe('Channels', () => {
       prmq.channel()
         .then(ch => ch.queue('prmqTestQueue', { durable: true }))
         .then((q) => {
-          expect(q.getName()).to.eq('prmqTestQueue');
-          expect(q.isDurable()).to.be.true;
+          expect(q.queueName).to.eq('prmqTestQueue');
+          expect(q.durable).to.be.true;
         }));
 
     it('should queue up a assertion on a queue', () =>
       prmq.channel()
         .then((ch) => {
-          const shouldAssert = ch.queue('prmqTestQueue', { durable: true })._shouldAssert;
-          expect(shouldAssert).to.be.true;
+          const q = ch.queue('prmqTestQueue', { durable: true });
+          expect(q.shouldAssert).to.be.true;
         }));
 
     it('should create a queue on RabbitMQ server', async () => {
@@ -33,7 +32,7 @@ describe('Channels', () => {
       const q = ch.queue('prmqTestQueue');
       await q.exec();
       await q.check();
-      await ch.deleteQueue('prmqTestQueue');
+      await ch.deleteQueue('prmqTestQueue',);
     });
   });
 

@@ -18,28 +18,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-/**
- * Publish options
- * @typedef {Object} PublishOptions
- * @property {string} expiration
- * @property {string} userId
- * @property {string|string[]} CC
- * @property {number} priority
- * @property {boolean} persistent
- * @property {boolean|number} deliveryMode
- */
+import {Channel, Options, Replies} from "amqplib";
+import * as Bluebird from 'bluebird'
+
+export enum PRMQExchangeTypes {
+  Fanout = 'fanout',
+  Direct = 'direct',
+  Topic = 'topic'
+}
+
+export class PRMQExchange {
+
+  private _ch: Channel;
+  private _exchangeName: string;
+  private _options: any;
+  private _type: PRMQExchangeTypes;
+  private _sends: Array<any>;
+  private _shouldAssert = false;
 
 
-class Exchange {
-  /**
-   *
-   * @param {Channel} channel
-   * @param {string} exchangeName
-   * @param {string} type
-   * @param {object} options
-   */
   constructor(channel, exchangeName, type, options) {
-    this._objectType = 'exchange';
     this._ch = channel;
     this._exchangeName = exchangeName;
     this._options = options;
@@ -47,9 +45,13 @@ class Exchange {
     this._sends = [];
   }
 
+  public get ExchangeName() {
+    return this._exchangeName;
+  }
+
   /**
    * Execute all actions currently pending on the exchange
-   * @returns {Promise.<Exchange>}
+   * @returns {Promise.<this>}
    */
   async exec() {
     if (this._shouldAssert) {
@@ -71,16 +73,14 @@ class Exchange {
 
   /**
    * Assert an exchange - Channel#assertExchange
-   * @returns {Exchange}
    */
   assert() {
-    this._shouldAssert = this;
+    this._shouldAssert = true;
     return this;
   }
 
   /**
    * Get the name of the exchange
-   * @returns {string}
    */
   getName() {
     return this._exchangeName;
@@ -91,7 +91,7 @@ class Exchange {
    * @returns {boolean}
    */
   isFanoutExchange() {
-    return this._type === 'fanout';
+    return this._type === PRMQExchangeTypes.Fanout;
   }
 
   /**
@@ -99,7 +99,7 @@ class Exchange {
    * @returns {boolean}
    */
   isDirectExchange() {
-    return this._type === 'direct';
+    return this._type === PRMQExchangeTypes.Direct;
   }
 
   /**
@@ -107,46 +107,36 @@ class Exchange {
    * @returns {boolean}
    */
   isTopicExchange() {
-    return this._type === 'topic';
+    return this._type === PRMQExchangeTypes.Topic;
   }
 
   /**
    * Exchange was created with option { durable: true }
-   * @returns {*|boolean}
    */
-  isDurable() {
+  public get durable() {
     return this._options && this._options.durable === true;
   }
 
   /**
-   * Delete Exchange
-   * @returns {{exchange, ifUnused, ticket, nowait}|<Replies.Empty>|void}
-   */
-  deleteExchange() {
-    return this._ch.deleteExchange(this._exchangeName);
-  }
+ * Delete Exchange
+ */
+deleteExchange(): Bluebird<Replies.Empty> {
+  return this._ch.deleteExchange(this._exchangeName);
+}
 
   /**
    * Public a message to an exchange - Channel#publish
-   * @param {string|Object} message
-   * @param {PublishOptions?} options
-   * @returns {Exchange}
    */
-  publish(message, options) {
+  publish(message: any, options?: Options.Publish) {
     this._sends.push({ message, options });
     return this;
   }
 
   /**
    * Publish a message to an exchange with a routing key - Channel#publish
-   * @param {string|Object} message
-   * @param {string} routingKey
-   * @returns {Exchange}
    */
-  publishWithRoutingKey(message, routingKey) {
-    this._sends.push({ message, routingKey });
+  publishWithRoutingKey(message: any, routingKey: string, options?: Options.Publish) {
+    this._sends.push({ message, routingKey, options });
     return this;
   }
 }
-
-module.exports = Exchange;

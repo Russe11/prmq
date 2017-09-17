@@ -4,8 +4,8 @@
   "description": "Promise Based AMPQ Wrapper for JS",
   "main": "dist/index.js",
   "scripts": {
-    "test": "rm -rf dist && babel index.js tests/* lib/* --out-dir dist && istanbul cover ./node_modules/mocha/bin/_mocha dist/**/*.tests.js --timeout 6000 --report lcovonly -- -R spec && codecov",
-    "build": "babel index.js lib/* --out-dir dist",
+    "test": "rm -rf dist && tsc && istanbul cover ./node_modules/mocha/bin/_mocha dist/**/*.tests.js --timeout 6000 --report lcovonly -- -R spec && codecov",
+    "build": "rm -rf dist && tsc",
     "postinstall": "postinstall-build dist"
   },
   "repository": {
@@ -24,27 +24,23 @@
   "dependencies": {
     "amqplib": "^0.5.1",
     "babel-polyfill": "^6.26.0",
-    "bluebird": "^3.5.0",
-    "postinstall-build": "^5.0.1"
+    "bluebird": "^3.5.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.0",
-    "babel-preset-env": "^1.6.0",
-    "babel-preset-node6": "^11.0.0",
+    "@types/amqplib": "^0.5.4",
+    "@types/bluebird": "^3.5.11",
+    "@types/chai": "^4.0.4",
+    "@types/chai-as-promised": "^7.1.0",
+    "@types/mocha": "^2.2.43",
+    "@types/node": "^8.0.28",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "codecov": "^2.3.0",
-    "eslint": "^4.6.1",
+    "eslint": "^4.7.0",
     "eslint-config-airbnb-base": "^12.0.0",
     "eslint-plugin-import": "^2.7.0",
     "istanbul": "^0.4.5",
-    "mocha": "^3.5.0"
-  },
-  "buildDependencies": [
-    "babel-cli",
-    "babel-core",
-    "babel-preset-env",
-    "babel-preset-node6"
-  ]
+    "mocha": "^3.5.3",
+    "typescript": "^2.5.2"
+  }
 }

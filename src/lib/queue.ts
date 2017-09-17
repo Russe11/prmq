@@ -18,40 +18,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-require('babel-polyfill');
-const ConsumeThen = require('./consumeThen');
+import {PRMQConsumeThen} from './consumeThen';
+import {Channel, Message, Options} from "amqplib";
+import {PRMQExchange} from "./exchange";
 
-class Queue {
-  constructor(ch, queueName, options) {
-    this._objectType = 'queue';
-    this._ch = ch;
+export class PRMQQueue {
+
+  private _queueName: string;
+  private _ch: Channel;
+  private _options: Options.AssertQueue;
+  private _shouldAssert = false;
+  private _sends: Array<{ message: any, options?: Options.Publish}> = [];
+  private _consumers: Array<any> = [];
+  private _binds: Array<any> = [];
+  private _q: any;
+
+  constructor(ch: Channel, queueName: string, options?) {
     this._queueName = queueName;
+    this._ch = ch;
     this._options = options;
-    this._shouldAssert = false;
-    this._sends = [];
-    this._consumers = [];
-    this._binds = [];
   }
 
   /**
-   * Send options
-   * @typedef {Object} SendQueueOptions
-   * @property {string} expiration
-   * @property {string} userId
-   * @property {string|string[]} CC
-   * @property {number} priority
-   * @property {boolean} persistent
-   * @property {boolean|number} deliveryMode
-   */
-
-
-  /**
    * Execute all actions currently pending on the queue
-   * @returns {Promise.<Queue>}
    */
-  async exec() {
+  public async exec() {
     if (this._shouldAssert) {
-      this._q = await this._ch.assertQueue(this._queueName, this._options);
+      this._q = await this._ch.assertQueue(this.queueName, this._options);
     }
 
     this._binds.forEach(async (b) => {
@@ -60,13 +53,13 @@ class Queue {
 
     this._consumers.forEach((c) => {
       if (c.noAck === true && c.raw === false) {
-        this._consume(c.cb);
+        this._consume(c.callbackFn);
       } else if (c.noAck === false && c.raw === false) {
-        this._consumeWithAck(c.cb);
+        this._consumeWithAck(c.callbackFn);
       } else if (c.noAck === true && c.raw === true) {
-        this._consumeRaw(c.cb);
+        this._consumeRaw(c.callbackFn);
       } else if (c.noAck === false && c.raw === true) {
-        this._consumeRawWithAck(c.cb);
+        this._consumeRawWithAck(c.callbackFn);
       }
     });
 
@@ -78,29 +71,30 @@ class Queue {
     return this;
   }
 
-  getName() {
+  get queueName() {
     return this._queueName;
+  }
+
+  get shouldAssert() {
+    return this._shouldAssert;
   }
 
   /**
    * Queue was created with option { durable: true }
-   * @returns {*|boolean}
    */
-  isDurable() {
+  get durable() {
     return this._options && this._options.durable === true;
   }
 
   /**
    * Check if a queue exists
-   * @returns {Promise.<void>}
    */
-  async check() {
+  public async check() {
     await this._ch.checkQueue(this._queueName);
   }
 
   /**
    * Assert a queue - Channel#assertQueue
-   * @returns {Queue}
    */
   assert() {
     this._shouldAssert = true;
@@ -109,9 +103,6 @@ class Queue {
 
   /**
    * Send a message to a queue
-   * @param {string|object} message
-   * @param {SendQueueOptions} options
-   * @returns {Queue}
    */
   send(message, options = {}) {
     this._send(message, options);
@@ -122,67 +113,54 @@ class Queue {
     this._sends.push({ message, options });
   }
 
-  bind(exchange, routing) {
-    this._binds.push({ exchangeName: exchange._exchangeName, routing });
+  bind(exchange: PRMQExchange) {
+    this._binds.push({ exchangeName: exchange.ExchangeName });
     return this;
   }
 
-  /**
-   * @param {Exchange} exchange
-   * @param {string} routing
-   */
-  bindWithRouting(exchange, routing) {
-    this._binds.push({ exchangeName: exchange._exchangeName, routing });
+  bindWithRouting(exchange: PRMQExchange, routing: string) {
+    this._binds.push({ exchangeName: exchange.ExchangeName, routing });
     return this;
   }
 
-  bindWithRoutings(exchange, routings) {
+  bindWithRoutings(exchange: PRMQExchange, routings: Array<string>) {
     routings.forEach((routing) => {
-      this._binds.push({ exchangeName: exchange._exchangeName, routing });
+      this._binds.push({ exchangeName: exchange.ExchangeName, routing });
     });
     return this;
   }
 
-  consume(cb) {
-    this._consumers.push({ noAck: true, raw: false, cb });
+  consume(callbackFn: (msg: any, then: PRMQConsumeThen) => void) {
+    this._consumers.push({ noAck: true, raw: false, callbackFn });
     return this;
   }
 
-  consumeRaw(cb) {
-    this._consumers.push({ noAck: true, raw: true, cb });
+  consumeRaw(callbackFn: (msg: Message) => void) {
+    this._consumers.push({ noAck: true, raw: true, callbackFn });
     return this;
   }
 
-  consumeWithAck(cb) {
-    this._consumers.push({ noAck: false, raw: false, cb });
+  consumeWithAck(callbackFn: (msg: any, then: PRMQConsumeThen) => void) {
+    this._consumers.push({ noAck: false, raw: false, callbackFn });
     return this;
   }
 
-  /**
-   * Consume
-   * @param cb
-   * @returns {Queue}
-   */
-  consumeRawWithAck(cb) {
-    this._consumers.push({ noAck: false, raw: true, cb });
+  consumeRawWithAck(callbackFn: (msg: Message, then: PRMQConsumeThen) => void) {
+    this._consumers.push({ noAck: false, raw: true, callbackFn });
     return this;
   }
 
   /**
    * Channel Prefetch - channel#prefetch
-   * @param count
-   * @returns {Queue}
    */
-  prefetch(count) {
-    this._ch.prefetch(count);
+  async prefetch(count) {
+    await this._ch.prefetch(count);
     return this;
   }
 
   /**
-   * @returns {Queue}
-   * @private
    */
-  _consume(cb) {
+  private _consume(cb) {
     this._ch.consume(this._q.queue, (msg) => {
       if (msg !== null) {
         const content = msg.content.toString();
@@ -192,45 +170,29 @@ class Queue {
     return this;
   }
 
-  /**
-   * @param cb
-   * @private
-   */
-  _consumeWithAck(cb) {
+  private _consumeWithAck(cb) {
     this._ch.consume(this._q.queue, (msg) => {
       if (msg !== null) {
         const content = msg.content.toString();
         cb(
           content.startsWith('{') ? JSON.parse(content) : content,
-          new ConsumeThen(this._ch, msg),
+          new PRMQConsumeThen(this._ch, msg),
         );
       }
     }, { noAck: false });
   }
 
-  /**
-   * @param cb
-   * @returns {Queue}
-   * @private
-   */
-  _consumeRaw(cb) {
+  private _consumeRaw(cb) {
     this._ch.consume(this._q.queue, msg => cb(msg, () => {
       this._ch.ack(msg);
     }), { noAck: true });
     return this;
   }
 
-  /**
-   * @param cb
-   * @returns {Queue}
-   * @private
-   */
-  _consumeRawWithAck(cb) {
+  private _consumeRawWithAck(cb) {
     this._ch.consume(this._q.queue, msg => cb(msg, () => {
       this._ch.ack(msg);
     }), { noAck: false });
     return this;
   }
 }
-
-module.exports = Queue;

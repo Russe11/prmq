@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-vars,no-console,import/no-extraneous-dependencies,padded-blocks */
-require('babel-polyfill');
 
-const P = require('bluebird');
-const { expect } = require('chai');
-const PRMQ = require('../index');
+import {} from 'mocha';
+import * as P from 'bluebird';
+import { expect } from 'chai';
+import { PRMQ } from '../index'
 
 const prmq = new PRMQ('amqp://localhost');
 

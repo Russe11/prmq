@@ -7,7 +7,7 @@
 import {} from 'mocha';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {PRMQ} from '../PRMQ';
+import {PRMQ} from '../lib/PRMQ';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

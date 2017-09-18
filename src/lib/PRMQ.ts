@@ -25,10 +25,10 @@
 import * as amqp from 'amqplib';
 import * as P from 'bluebird';
 
-import { PRMQChannel } from './lib/PRMQChannel';
-import { PRMQExchange } from './lib/PRMQExchange';
-import { PRMQQueue } from './lib/PRMQQueue';
-import { PRMQConsumeThen } from './lib/PRMQConsumeThen';
+import { PRMQChannel } from './PRMQChannel';
+import { PRMQExchange } from './PRMQExchange';
+import { PRMQQueue } from './PRMQQueue';
+import { PRMQConsumeThen } from './PRMQConsumeThen';
 
 const debug = require('debug')('http');
 

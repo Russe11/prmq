@@ -3,7 +3,7 @@
 import {} from 'mocha';
 import * as P from 'bluebird';
 import { expect } from 'chai';
-import { PRMQ } from '../PRMQ'
+import { PRMQ } from '../lib/PRMQ'
 
 let prmq;
 

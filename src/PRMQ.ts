@@ -30,6 +30,8 @@ import { PRMQExchange } from './lib/PRMQExchange';
 import { PRMQQueue } from './lib/PRMQQueue';
 import { PRMQConsumeThen } from './lib/PRMQConsumeThen';
 
+const debug = require('debug')('http');
+
 import {Connection, Replies} from 'amqplib';
 
 export { PRMQChannel, PRMQExchange, PRMQQueue, PRMQConsumeThen };
@@ -50,11 +52,8 @@ export class PRMQ {
     const conn = await this.open;
     let ch = await conn.createChannel();
 
-    ch.on('disconnect', async (err) => {
-      ch = await conn.createChannel();
-    });
-
     ch.on('error', async (err) => {
+      debug('Channel Error %o', err.message)
       ch = await conn.createChannel();
     });
 

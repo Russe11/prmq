@@ -24,7 +24,8 @@
   "dependencies": {
     "amqplib": "^0.5.1",
     "babel-polyfill": "^6.26.0",
-    "bluebird": "^3.5.0"
+    "bluebird": "^3.5.0",
+    "debug": "^3.0.1"
   },
   "devDependencies": {
     "@types/amqplib": "^0.5.4",

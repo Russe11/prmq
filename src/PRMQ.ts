@@ -48,7 +48,16 @@ export class PRMQ {
    */
   public async channel(prefetch?: number) {
     const conn = await this.open;
-    const ch = await conn.createChannel();
+    let ch = await conn.createChannel();
+
+    ch.on('disconnect', async (err) => {
+      ch = await conn.createChannel();
+    });
+
+    ch.on('error', async (err) => {
+      ch = await conn.createChannel();
+    });
+
     if (prefetch) {
       await ch.prefetch(prefetch);
     }

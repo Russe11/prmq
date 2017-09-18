@@ -107,10 +107,10 @@ describe('Channels', () => {
     });
 
     it('should throw an error when a Queue object does not exist', async () => {
-      const ch = await prmq.channel();
+      let ch = await prmq.channel();
       const q = await ch.queue('prmqCheckQueue');
       await q.exec();
-      expect(ch.checkQueue('prmqCheckQueueNotExist')).to.be.rejected;
+      expect(ch.checkQueue('prmqQueueNotExist')).to.be.rejected;
     });
   });
 });

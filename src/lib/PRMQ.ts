@@ -30,7 +30,7 @@ import {ChannelConf} from './channel/ChannelConf';
 import {ChannelNConf} from './channel/ChannelNConf';
 
 import {ExchangeConf} from './exchange/ExchangeConf';
-import {ExchangeNConf} from './cxchange/ExchangeNConf';
+import {ExchangeNConf} from './exchange/ExchangeNConf';
 
 import {QueueConf} from './queue/QueueConf';
 import {QueueNConf} from './queue/QueueNConf';

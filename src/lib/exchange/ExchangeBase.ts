@@ -22,7 +22,7 @@
  * PRMQ Exchange
  */
 
-import {Channel, Options, Replies} from 'amqplib';
+import {Options, Replies} from 'amqplib';
 import * as Bluebird from 'bluebird';
 
 export enum ExchangeTypes {

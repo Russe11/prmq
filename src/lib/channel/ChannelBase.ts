@@ -22,7 +22,7 @@
  * PRMQ Channel
  */
 
-import {Channel, Options, Replies} from 'amqplib';
+import {Options, Replies} from 'amqplib';
 import * as Bluebird from 'bluebird';
 
 export class ChannelBase {

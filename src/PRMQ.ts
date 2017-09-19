@@ -31,7 +31,9 @@ import {ChannelNConf} from './channel/ChannelNConf';
 
 const debug = require('debug')('http');
 
-export default class PRMQ {
+
+
+const prmq = class PRMQ {
 
   private connectionString;
   private open: P<Connection>;
@@ -91,4 +93,7 @@ export default class PRMQ {
         P.map(queues, queue => ch.deleteQueue(queue))
           .then(() => P.map(exchanges, exchange => ch.deleteExchange(exchange))));
   }
-}
+};
+
+module.exports = prmq;
+export default prmq;

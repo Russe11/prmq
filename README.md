@@ -2,6 +2,7 @@
 [![Build Status](https://travis-ci.org/Russe11/prmq.svg?branch=master)](https://travis-ci.org/Russe11/prmq)
 [![Dependency Status](https://gemnasium.com/badges/github.com/Russe11/prmq.svg)](https://gemnasium.com/github.com/Russe11/prmq)
 [![codecov](https://codecov.io/gh/Russe11/prmq/branch/master/graph/badge.svg)](https://codecov.io/gh/Russe11/prmq)
+[![DeepScan Grade](https://deepscan.io/api/projects/461/branches/710/badge/grade.svg)](https://deepscan.io/dashboard/#view=project&pid=461&bid=710)
 
 # PRMQ
 ### Promise based amqplib wrapper For RabbitMQ and Javascript

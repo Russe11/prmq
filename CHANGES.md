@@ -1,3 +1,23 @@
+2017-09-19, Version 0.4.9
+=========================
+
+ * we keep trying (Russell Lewis)
+
+ * Added both export types (Russell Lewis)
+
+ * Fixed import on tests (Russell Lewis)
+
+ * Made prmq class exportable (Russell Lewis)
+
+ * Still trying to get this working (Russell Lewis)
+
+ * try to specify types in tsconfig (Russell Lewis)
+
+ * Adding --module commonjs to prod compile (Russell Lewis)
+
+ * Trying to use the tsconfig for building (Russell Lewis)
+
+
 2017-09-19, Version 0.4.8
 =========================
 

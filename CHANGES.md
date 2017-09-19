@@ -1,3 +1,39 @@
+2017-09-19, Version 0.4.0
+=========================
+
+ * Fixed another casing issue (Russell Lewis)
+
+ * Type (Russell Lewis)
+
+ * Change exchange folder name to be lowercase (Russell Lewis)
+
+ * Removed unused imports (Russell Lewis)
+
+ * Connection is only established when performing an action on a channel (Russell Lewis)
+
+ * ConfirmChannel (Russell Lewis)
+
+ * Moved test running over to ts-node (Russell Lewis)
+
+ * Update README.md (Russell Lewis)
+
+ * Added debug message on disconnect error (Russell Lewis)
+
+ * Added reconnect logic on channels when an error happens (Russell Lewis)
+
+ * Fixed assertion in test (Russell Lewis)
+
+ * Fixed bad test assertions (Russell Lewis)
+
+ * Fixed a couple more linting issues (Russell Lewis)
+
+ * Updated TS files to pass tslint-microsoft-contrib rules (Russell Lewis)
+
+ * Removed babel from travis (Russell Lewis)
+
+ * Moved code over to Typescript (Russell Lewis)
+
+
 2017-09-14, Version 0.3.6
 =========================
 

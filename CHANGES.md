@@ -1,3 +1,9 @@
+2017-09-19, Version 0.4.8
+=========================
+
+ * Fixed types when doing buildprod (Russell Lewis)
+
+
 2017-09-19, Version 0.4.7
 =========================
 

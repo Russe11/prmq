@@ -7,9 +7,9 @@
     "outDir": "./dist"
   },
   "include": [
-    "src/**/*.ts"
+    "src/PRMQ.ts",
+    "src/tests"
   ],
   "exclude": [
-    "node_modules"
   ]
 }

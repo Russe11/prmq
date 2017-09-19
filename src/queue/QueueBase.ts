@@ -22,7 +22,7 @@
  * PRMQ Queues
  */
 
-import {ConsumeThen} from '../ConsumeThen';
+import {ConsumeThen} from '../helpers/ConsumeThen';
 import {Message, Options, Replies} from 'amqplib';
 import {ExchangeBase} from '../exchange/ExchangeBase';
 import AssertQueue = Replies.AssertQueue;

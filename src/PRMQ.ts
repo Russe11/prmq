@@ -35,7 +35,7 @@ import {ExchangeNConf} from './exchange/ExchangeNConf';
 import {QueueConf} from './queue/QueueConf';
 import {QueueNConf} from './queue/QueueNConf';
 
-import {ConsumeThen} from './ConsumeThen';
+import {ConsumeThen} from './helpers/ConsumeThen';
 
 const debug = require('debug')('http');
 

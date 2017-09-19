@@ -2,7 +2,7 @@
 
 import * as P from 'bluebird';
 import {expect} from 'chai';
-import {PRMQ} from '../lib/PRMQ';
+import {PRMQ} from '../PRMQ';
 
 let prmq;
 

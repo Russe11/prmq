@@ -3,14 +3,11 @@
     "module": "commonjs",
     "target": "es5",
     "lib": ["es5", "es6", "es7", "es2015", "es2015.promise"],
-    "types" : ["node", "lodash", "express"]
+    "types" : ["chai", "amqplib", "bluebird", "chai", "chai-as-promised", "mocha", "node"],
     "declaration": true,
     "outDir": "./dist"
   },
   "include": [
-    "src/PRMQ.ts",
-    "src/tests"
-  ],
-  "exclude": [
-]
+    "src/PRMQ.ts"
+  ]
 }

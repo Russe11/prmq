@@ -4,7 +4,7 @@
 
 import {Channel} from 'amqplib';
 
-export class PRMQConsumeThen {
+export class ConsumeThen {
 
   constructor(private ch: Channel, private msg: any) {
   }

@@ -4,7 +4,6 @@
  * PRMQChannel Tests
  */
 
-import {} from 'mocha';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {PRMQ} from '../lib/PRMQ';
@@ -21,6 +20,7 @@ describe('Channels', () => {
   });
 
   describe('queue()', () => {
+
     it('should setup a queue', () =>
       prmq.channel()
         .then(ch => ch.queue('prmqTestQueue', { durable: true }))

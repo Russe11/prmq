@@ -25,48 +25,32 @@
 import {Channel, Options, Replies} from 'amqplib';
 import * as Bluebird from 'bluebird';
 
-export enum PRMQExchangeTypes {
+export enum ExchangeTypes {
   Fanout = 'fanout',
   Direct = 'direct',
   Topic = 'topic'
 }
 
-export class PRMQExchange {
-  private sends: any[];
-  private shouldAssert: boolean = false;
+export class ExchangeBase {
+
+  public shouldAssert: boolean = false;
 
   constructor(
-    private channel: Channel,
-    private exchangeName: string,
-    private exchangeType: PRMQExchangeTypes,
-    private options?: Options.AssertExchange) {
-    this.sends = [];
+    public channel,
+    public exchangeName: string,
+    public exchangeType: ExchangeTypes,
+    public options?: Options.AssertExchange) {
   }
 
-  public get ExchangeName() {
-    return this.exchangeName;
-  }
-
-  /**
-   * Execute all actions currently pending on the exchange
-   * @returns {Promise.<this>}
-   */
-  public async exec() {
+  public async execAssert(){
     if (this.shouldAssert) {
       await this.channel.assertExchange(this.exchangeName, this.exchangeType, this.options);
       this.shouldAssert = false;
     }
+  }
 
-    this.sends.forEach(async (s) => {
-      const msg = typeof s.message === 'string' ? s.message : JSON.stringify(s.message);
-      if (!s.routingKey) {
-        await this.channel.publish(this.exchangeName, '', Buffer.from(msg));
-      } else {
-        await this.channel.publish(this.exchangeName, s.routingKey, Buffer.from(msg));
-      }
-    });
-    this.sends = [];
-    return this;
+  public get ExchangeName() {
+    return this.exchangeName;
   }
 
   /**
@@ -88,14 +72,14 @@ export class PRMQExchange {
    * Is exchange of type = fanout
    */
   public isFanoutExchange() {
-    return this.exchangeType === PRMQExchangeTypes.Fanout;
+    return this.exchangeType === ExchangeTypes.Fanout;
   }
 
   /**
    * Is exchange of type = direct
    */
   public isDirectExchange() {
-    return this.exchangeType === PRMQExchangeTypes.Direct;
+    return this.exchangeType === ExchangeTypes.Direct;
   }
 
   /**
@@ -103,7 +87,7 @@ export class PRMQExchange {
    * @returns {boolean}
    */
   public isTopicExchange() {
-    return this.exchangeType === PRMQExchangeTypes.Topic;
+    return this.exchangeType === ExchangeTypes.Topic;
   }
 
   /**
@@ -120,19 +104,4 @@ export class PRMQExchange {
     return this.channel.deleteExchange(this.exchangeType);
   }
 
-  /**
-   * Public a message to an exchange - Channel#publish
-   */
-  public publish(message: any, options?: Options.Publish) {
-    this.sends.push({ message, options });
-    return this;
-  }
-
-  /**
-   * Publish a message to an exchange with a routing key - Channel#publish
-   */
-  public publishWithRoutingKey(message: any, routingKey: string, options?: Options.Publish) {
-    this.sends.push({ message, routingKey, options });
-    return this;
-  }
 }

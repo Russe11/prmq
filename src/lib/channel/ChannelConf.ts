@@ -22,23 +22,21 @@
  * PRMQ Channel
  */
 
-import {PRMQQueue} from './PRMQQueue';
-import {Channel, Options, Replies} from 'amqplib';
-import {PRMQExchange, PRMQExchangeTypes} from './PRMQExchange';
+import {QueueConf} from '../queue/QueueConf';
+import {ConfirmChannel, Options, Replies} from 'amqplib';
+import {ExchangeTypes} from '../Exchange/ExchangeBase';
 import * as Bluebird from 'bluebird';
+import {ChannelBase} from './ChannelBase';
+import {ExchangeConf} from '../Exchange/ExchangeConf';
 
-export class PRMQChannel {
+export class ChannelConf extends ChannelBase {
 
-  public queueName: string;
-  private closed: boolean = false;
-  private ch: Channel;
-
-  constructor(channel: Channel) {
-    this.ch = channel;
+  constructor(channel: ConfirmChannel) {
+    super(channel)
   }
 
   public queue(queueName: string, options?: Options.AssertQueue) {
-    const q = new PRMQQueue(this.ch, queueName, options);
+    const q = new QueueConf(this.ch, queueName, options);
     return q.assert();
   }
 
@@ -56,7 +54,7 @@ export class PRMQChannel {
 
   public deleteQueue(queueName: string, options?: Options.DeleteQueue): Bluebird<Replies.DeleteQueue> {
     if (this.closed) {
-      PRMQChannel.throwClosedChannel();
+      ChannelBase.throwClosedChannel();
     }
     return this.ch.deleteQueue(queueName, options);
   }
@@ -69,8 +67,8 @@ export class PRMQChannel {
     });
   }
 
-  public exchange(exchangeName: string, exchangeType: PRMQExchangeTypes, options?: Options.AssertExchange) {
-    const ex = new PRMQExchange(this.ch, exchangeName, exchangeType, options);
+  public exchange(exchangeName: string, exchangeType: ExchangeTypes, options?: Options.AssertExchange) {
+    const ex = new ExchangeConf(this.ch, exchangeName, exchangeType, options);
     return ex.assert();
   }
 
@@ -79,9 +77,9 @@ export class PRMQChannel {
    */
   public exchangeDirect(exchangeName: string, options?: Options.AssertExchange) {
     if (this.closed) {
-      PRMQChannel.throwClosedChannel();
+      ChannelBase.throwClosedChannel();
     }
-    return this.exchange(exchangeName, PRMQExchangeTypes.Direct, options);
+    return this.exchange(exchangeName, ExchangeTypes.Direct, options);
   }
 
   /**
@@ -89,9 +87,9 @@ export class PRMQChannel {
    */
   public exchangeFanout(exchangeName: string, options?: Options.AssertExchange) {
     if (this.closed) {
-      PRMQChannel.throwClosedChannel();
+      ChannelBase.throwClosedChannel();
     }
-    return this.exchange(exchangeName, PRMQExchangeTypes.Fanout, options);
+    return this.exchange(exchangeName, ExchangeTypes.Fanout, options);
   }
 
   /**
@@ -99,28 +97,10 @@ export class PRMQChannel {
    */
   public exchangeTopic(exchangeName: string, options: Options.AssertExchange = {}) {
     if (this.closed) {
-      PRMQChannel.throwClosedChannel();
+      ChannelBase.throwClosedChannel();
     }
-    return this.exchange(exchangeName, PRMQExchangeTypes.Topic, options);
+    return this.exchange(exchangeName, ExchangeTypes.Topic, options);
   }
 
-  /**
-   * Close the channel
-   */
-  public async close() {
-    await this.ch.close();
-    this.closed = true;
-    return this;
-  }
 
-  public isClosed() {
-    return this.closed;
-  }
-
-  /**
-   * @private
-   */
-  private static throwClosedChannel() {
-    throw new Error('Channel Closed');
-  }
 }

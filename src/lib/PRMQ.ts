@@ -23,18 +23,23 @@
  */
 
 import * as amqp from 'amqplib';
+import {Connection, Replies} from 'amqplib';
 import * as P from 'bluebird';
 
-import { PRMQChannel } from './PRMQChannel';
-import { PRMQExchange } from './PRMQExchange';
-import { PRMQQueue } from './PRMQQueue';
-import { PRMQConsumeThen } from './PRMQConsumeThen';
+import {ChannelConf} from './channel/ChannelConf';
+import {ChannelNConf} from './channel/ChannelNConf';
+
+import {ExchangeConf} from './Exchange/ExchangeConf';
+import {ExchangeNConf} from './Exchange/ExchangeNConf';
+
+import {QueueConf} from './queue/QueueConf';
+import {QueueNConf} from './queue/QueueNConf';
+
+import {ConsumeThen} from './ConsumeThen';
 
 const debug = require('debug')('http');
 
-import {Connection, Replies} from 'amqplib';
-
-export { PRMQChannel, PRMQExchange, PRMQQueue, PRMQConsumeThen };
+export { ChannelConf, ChannelNConf, ExchangeConf, ExchangeNConf, QueueConf, QueueNConf, ConsumeThen };
 
 export class PRMQ {
 
@@ -51,16 +56,27 @@ export class PRMQ {
   public async channel(prefetch?: number) {
     const conn = await this.open;
     let ch = await conn.createChannel();
-
     ch.on('error', async (err) => {
-      debug('Channel Error %o', err.message)
+      debug('Channel Error %o', err.message);
       ch = await conn.createChannel();
     });
-
     if (prefetch) {
       await ch.prefetch(prefetch);
     }
-    return new PRMQChannel(ch);
+    return new ChannelNConf(ch);
+  }
+
+  public async confirmChannel(prefetch?: number) {
+    const conn = await this.open;
+    let ch = await conn.createConfirmChannel();
+    ch.on('error', async (err) => {
+      debug('Channel Error %o', err.message);
+      ch = await conn.createConfirmChannel();
+    });
+    if (prefetch) {
+      await ch.prefetch(prefetch);
+    }
+    return new ChannelConf(ch);
   }
 
   /**

@@ -1,9 +1,8 @@
 /* eslint-disable no-unused-vars,no-console,import/no-extraneous-dependencies,padded-blocks */
 
-import {} from 'mocha';
 import * as P from 'bluebird';
-import { expect } from 'chai';
-import { PRMQ } from '../lib/PRMQ'
+import {expect} from 'chai';
+import {PRMQ} from '../lib/PRMQ';
 
 let prmq;
 

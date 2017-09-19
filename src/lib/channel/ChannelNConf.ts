@@ -24,9 +24,9 @@
 
 import {QueueNConf} from '../queue/QueueNConf';
 import {Channel, Options} from 'amqplib';
-import {ExchangeTypes} from '../Exchange/ExchangeBase';
+import {ExchangeTypes} from '../exchange/ExchangeBase';
 import {ChannelBase} from './ChannelBase';
-import {ExchangeNConf} from '../Exchange/ExchangeNConf';
+import {ExchangeNConf} from '../exchange/ExchangeNConf';
 
 export class ChannelNConf extends ChannelBase {
 

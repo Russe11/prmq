@@ -24,10 +24,10 @@
 
 import {QueueConf} from '../queue/QueueConf';
 import {ConfirmChannel, Options, Replies} from 'amqplib';
-import {ExchangeTypes} from '../Exchange/ExchangeBase';
+import {ExchangeTypes} from '../exchange/ExchangeBase';
 import * as Bluebird from 'bluebird';
 import {ChannelBase} from './ChannelBase';
-import {ExchangeConf} from '../Exchange/ExchangeConf';
+import {ExchangeConf} from '../exchange/ExchangeConf';
 
 export class ChannelConf extends ChannelBase {
 

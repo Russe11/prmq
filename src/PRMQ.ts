@@ -29,19 +29,9 @@ import * as P from 'bluebird';
 import {ChannelConf} from './channel/ChannelConf';
 import {ChannelNConf} from './channel/ChannelNConf';
 
-import {ExchangeConf} from './exchange/ExchangeConf';
-import {ExchangeNConf} from './exchange/ExchangeNConf';
-
-import {QueueConf} from './queue/QueueConf';
-import {QueueNConf} from './queue/QueueNConf';
-
-import {ConsumeThen} from './helpers/ConsumeThen';
-
 const debug = require('debug')('http');
 
-export { ChannelConf, ChannelNConf, ExchangeConf, ExchangeNConf, QueueConf, QueueNConf, ConsumeThen };
-
-export class PRMQ {
+module.exports = class PRMQ {
 
   private connectionString;
   private open: P<Connection>;

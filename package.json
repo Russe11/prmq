@@ -8,7 +8,7 @@
     "coverage": "nyc report --reporter=text-lcov > coverage.lcov",
     "postinstall": "postinstall-build lib --script buildProd",
     "build": "rm -rf dist && tsc -p ./tsconfig.json",
-    "buildProd": "tsc src/PRMQ.ts --target es5 --lib ES2015 --outDir dist",
+    "buildProd": "tsc src/PRMQ.ts --target es5 --lib ES2015 --types chai,amqplib,bluebird,chai,chai-as-promised,mocha,node  --outDir dist",
     "prepublishOnly": "tsc"
   },
   "repository": {

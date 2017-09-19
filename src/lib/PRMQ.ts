@@ -43,10 +43,11 @@ export { ChannelConf, ChannelNConf, ExchangeConf, ExchangeNConf, QueueConf, Queu
 
 export class PRMQ {
 
+  private connectionString;
   private open: P<Connection>;
 
   constructor(connectionString?: string) {
-    this.open = amqp.connect(connectionString);
+    this.connectionString = connectionString;
   }
 
   /**
@@ -54,6 +55,9 @@ export class PRMQ {
    * @param {number?} prefetch
    */
   public async channel(prefetch?: number) {
+    if (!this.open) {
+      this.open = amqp.connect(this.connectionString);
+    }
     const conn = await this.open;
     let ch = await conn.createChannel();
     ch.on('error', async (err) => {
@@ -67,6 +71,9 @@ export class PRMQ {
   }
 
   public async confirmChannel(prefetch?: number) {
+    if (!this.open) {
+      this.open = amqp.connect(this.connectionString);
+    }
     const conn = await this.open;
     let ch = await conn.createConfirmChannel();
     ch.on('error', async (err) => {
@@ -85,6 +92,9 @@ export class PRMQ {
    * @param {string[]?} queues
    */
   public deleteExchangesAndQueues(exchanges: string[], queues: string[] = []) : Replies.Empty {
+    if (!this.open) {
+      this.open = amqp.connect(this.connectionString);
+    }
     return this.open
       .then(conn => conn.createChannel())
       .then(ch =>

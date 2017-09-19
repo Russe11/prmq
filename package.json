@@ -25,7 +25,8 @@
   "dependencies": {
     "amqplib": "^0.5.1",
     "bluebird": "^3.5.0",
-    "debug": "^3.0.1"
+    "debug": "^3.0.1",
+    "ts-node": "^3.3.0"
   },
   "devDependencies": {
     "@types/amqplib": "^0.5.4",

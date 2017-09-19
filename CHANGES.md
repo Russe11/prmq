@@ -1,3 +1,15 @@
+2017-09-19, Version 0.4.1
+=========================
+
+ * Removed /dist (Russell Lewis)
+
+ * Added postinstall script to build ts (Russell Lewis)
+
+ * Added missing files to dist and fixed packages build (Russell Lewis)
+
+ * Added /dist folder (Russell Lewis)
+
+
 2017-09-19, Version 0.4.0
 =========================
 

@@ -1,3 +1,11 @@
+2017-09-19, Version 0.4.3
+=========================
+
+ * Removed incorrect JS files (Russell Lewis)
+
+ * Made TS compile local to package (Russell Lewis)
+
+
 2017-09-19, Version 0.4.2
 =========================
 

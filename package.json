@@ -6,7 +6,7 @@
   "scripts": {
     "test": "nyc mocha --require ts-node/register src/**/*.tests.ts --timeout 6000",
     "coverage": "nyc report --reporter=text-lcov > coverage.lcov",
-    "build": "rm -rf dist && tsc src/lib/*",
+    "build": "rm -rf dist && tsc",
     "prepublishOnly": "tsc"
   },
   "repository": {

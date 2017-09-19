@@ -1,3 +1,9 @@
+2017-09-19, Version 0.4.5
+=========================
+
+ * Made TS compile local to package (Russell Lewis)
+
+
 2017-09-19, Version 0.4.4
 =========================
 

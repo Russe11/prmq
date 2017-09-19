@@ -31,7 +31,7 @@ import {ChannelNConf} from './channel/ChannelNConf';
 
 const debug = require('debug')('http');
 
-module.exports = class PRMQ {
+export default class PRMQ {
 
   private connectionString;
   private open: P<Connection>;

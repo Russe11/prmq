@@ -2,7 +2,7 @@
   "name": "prmq",
   "version": "0.4.0",
   "description": "Promise Based AMPQ Wrapper for JS",
-  "main": "dist/PRMQ.js",
+  "main": "dist/lib/PRMQ.js",
   "scripts": {
     "test": "nyc mocha --require ts-node/register src/**/*.tests.ts --timeout 6000",
     "coverage": "nyc report --reporter=text-lcov > coverage.lcov",

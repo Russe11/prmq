@@ -6,8 +6,9 @@
   "scripts": {
     "test": "nyc mocha --require ts-node/register src/**/*.tests.ts --timeout 6000",
     "coverage": "nyc report --reporter=text-lcov > coverage.lcov",
-    "postinstall": "postinstall-build lib --script build",
+    "postinstall": "postinstall-build lib --script buildProd",
     "build": "rm -rf dist && tsc -p ./tsconfig.json",
+    "buildProd": "tsc -p node_packages/prmq/tsconfig.json",
     "prepublishOnly": "tsc"
   },
   "repository": {

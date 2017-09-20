@@ -23,72 +23,43 @@
  */
 
 import * as amqp from 'amqplib';
-import {Connection, Replies} from 'amqplib';
-import * as P from 'bluebird';
 
 import {ChannelConf} from './channel/ChannelConf';
 import {ChannelNConf} from './channel/ChannelNConf';
 
 const debug = require('debug')('http');
 
-module.exports = class PRMQ {
-
-  private connectionString;
-  private open: P<Connection>;
-
-  constructor(connectionString?: string) {
-    this.connectionString = connectionString;
+/**
+ * Create a RabbitMQ channel
+ */
+export async function channel(connectionString?: string, prefetch?: number) {
+  if (!this.open) {
+    this.open = amqp.connect(connectionString);
   }
-
-  /**
-   * Create a RabbitMQ channel
-   * @param {number?} prefetch
-   */
-  public async channel(prefetch?: number) {
-    if (!this.open) {
-      this.open = amqp.connect(this.connectionString);
-    }
-    const conn = await this.open;
-    let ch = await conn.createChannel();
-    ch.on('error', async (err) => {
-      debug('Channel Error %o', err.message);
-      ch = await conn.createChannel();
-    });
-    if (prefetch) {
-      await ch.prefetch(prefetch);
-    }
-    return new ChannelNConf(ch);
+  const conn = await this.open;
+  let ch = await conn.createChannel();
+  ch.on('error', async (err) => {
+    debug('Channel Error %o', err.message);
+    ch = await conn.createChannel();
+  });
+  if (prefetch) {
+    await ch.prefetch(prefetch);
   }
+  return new ChannelNConf(ch);
+}
 
-  public async confirmChannel(prefetch?: number) {
-    if (!this.open) {
-      this.open = amqp.connect(this.connectionString);
-    }
-    const conn = await this.open;
-    let ch = await conn.createConfirmChannel();
-    ch.on('error', async (err) => {
-      debug('Channel Error %o', err.message);
-      ch = await conn.createConfirmChannel();
-    });
-    if (prefetch) {
-      await ch.prefetch(prefetch);
-    }
-    return new ChannelConf(ch);
+export async function confirmChannel(prefetch?: number) {
+  if (!this.open) {
+    this.open = amqp.connect(this.connectionString);
   }
-
-  /**
-   * Remove exchange and queues from RabbitMQ
-   * @param {string[]} exchanges
-   * @param {string[]?} queues
-   */
-  public deleteExchangesAndQueues(exchanges: string[], queues: string[] = []) : Replies.Empty {
-    if (!this.open) {
-      this.open = amqp.connect(this.connectionString);
-    }
-    return this.open
-      .then(conn => conn.createChannel())
-      .then(ch =>
-        P.map(queues, queue => ch.deleteQueue(queue))
-          .then(() => P.map(exchanges, exchange => ch.deleteExchange(exchange))));
+  const conn = await this.open;
+  let ch = await conn.createConfirmChannel();
+  ch.on('error', async (err) => {
+    debug('Channel Error %o', err.message);
+    ch = await conn.createConfirmChannel();
+  });
+  if (prefetch) {
+    await ch.prefetch(prefetch);
   }
-};
+  return new ChannelConf(ch);
+}

@@ -43,7 +43,7 @@ export class QueueNConf extends QueueBase {
     });
   }
 
-  public send(message: any, options: Options.Publish) {
+  public send(message: any, options?: Options.Publish) {
     this.sends.push({ message, options });
     return this;
   }

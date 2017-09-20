@@ -62,7 +62,7 @@ export class ExchangeNConf extends ExchangeBase {
   /**
    * Public a message to an exchange - Channel#publish
    */
-  public publish(message: any, options: Options.Publish) {
+  public publish(message: any, options?: Options.Publish) {
     this.sends.push({ message, options });
     return this;
   }
@@ -70,7 +70,7 @@ export class ExchangeNConf extends ExchangeBase {
   /**
    * Publish a message to an exchange with a routing key - Channel#publish
    */
-  public publishWithRoutingKey(message: any, routingKey: string, options: Options.Publish) {
+  public publishWithRoutingKey(message: any, routingKey: string, options?: Options.Publish) {
     this.sends.push({ message, routingKey, options });
     return this;
   }

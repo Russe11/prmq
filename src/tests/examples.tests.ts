@@ -2,30 +2,30 @@
 
 import * as P from 'bluebird';
 import {expect} from 'chai';
-import {PRMQ} from '../PRMQ';
+import PRMQ = require('../PRMQ')
 
 let prmq;
 
 describe('Examples', () => {
 
-  before(() => {
-    prmq  = new PRMQ('amqp://localhost');
+  beforeEach( async() => {
+
+    const ch = await PRMQ.channel()
+    await ch.deleteExchangesAndQueues([
+      'test_exchange',
+      'logs',
+      'topic',
+      'direct_logs',
+    ], [
+      'test_queue',
+      'task_queue',
+      'logs',
+      'hello',
+    ]);
   });
 
-  beforeEach(() => P.join(prmq.deleteExchangesAndQueues([
-    'test_exchange',
-    'logs',
-    'topic',
-    'direct_logs',
-  ], [
-    'test_queue',
-    'task_queue',
-    'logs',
-    'hello',
-  ])));
-
   it('HelloWorld', (done) => {
-    prmq.channel()
+    PRMQ.channel()
       .then(async (ch) => {
         await ch.queue('hello')
           .consume((msg) => {
@@ -38,7 +38,7 @@ describe('Examples', () => {
   });
 
   it('Worker', (done) => {
-    prmq.channel(1)
+    PRMQ.channel('', 1)
       .then(async (ch) => {
         await ch.queue('task_queue')
           .consumeWithAck((msg, then) => {
@@ -55,7 +55,7 @@ describe('Examples', () => {
 
   it('PubSub', (done) => {
 
-    prmq.channel()
+    PRMQ.channel()
       .then(async (ch) => {
         const ex = await ch.exchangeFanout('logs').exec();
 
@@ -75,7 +75,7 @@ describe('Examples', () => {
   it('Routing', (done) => {
     const msg = 'Hello World!';
     const severity = 'info';
-    prmq.channel()
+    PRMQ.channel()
       .then(async (ch) => {
         const ex = await ch.exchangeDirect('logs').exec();
         await ch.queue('', { exclusive: true })
@@ -97,7 +97,7 @@ describe('Examples', () => {
 
   it('Topics', (done) => {
 
-    prmq.channel()
+    PRMQ.channel()
       .then(async (ch) => {
         const ex = await ch.exchangeTopic('topic', { durable: false }).exec();
         await ch.queue('', { exclusive: true })

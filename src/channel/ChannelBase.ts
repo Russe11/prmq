@@ -23,7 +23,7 @@
  */
 
 import {Options, Replies} from 'amqplib';
-import * as Bluebird from 'bluebird';
+import * as P from 'bluebird';
 
 export class ChannelBase {
 
@@ -48,7 +48,7 @@ export class ChannelBase {
     return this.ch.checkQueue(queueName);
   }
 
-  public deleteQueue(queueName: string, options?: Options.DeleteQueue): Bluebird<Replies.DeleteQueue> {
+  public deleteQueue(queueName: string, options?: Options.DeleteQueue): P<Replies.DeleteQueue> {
     if (this.closed) {
       ChannelBase.throwClosedChannel();
     }
@@ -75,6 +75,18 @@ export class ChannelBase {
   public isClosed() {
     return this.closed;
   }
+
+  /**
+   * Remove exchange and queues from RabbitMQ
+   * @param {string[]} exchanges
+   * @param {string[]?} queues
+   */
+  public async deleteExchangesAndQueues(exchanges: string[], queues: string[] = [])  {
+    await P.map(queues, queue => this.ch.deleteQueue(queue))
+      .then(() => P.map(exchanges, exchange => this.ch.deleteExchange(exchange)))
+  }
+
+
 
   /**
    * @private

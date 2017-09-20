@@ -1,3 +1,12 @@
+2017-09-20, Version 0.4.11
+==========================
+
+ * Improved compatability for using the library (Russell Lewis)
+
+
+2017-09-19, Version 0.4.10
+==========================
+
 
 
 2017-09-19, Version 0.4.9

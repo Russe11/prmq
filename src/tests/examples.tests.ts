@@ -1,10 +1,7 @@
 /* eslint-disable no-unused-vars,no-console,import/no-extraneous-dependencies,padded-blocks */
 
-import * as P from 'bluebird';
 import {expect} from 'chai';
 import PRMQ = require('../PRMQ')
-
-let prmq;
 
 describe('Examples', () => {
 

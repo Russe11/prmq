@@ -22,7 +22,7 @@ So this will not have any affect:
 
 ``` javascript
 ch.queue('hello')
-  .consume((msg) => { }); 
+  .consume((msg) => { });
 ```
 
 until you add ```.exec()```
@@ -38,8 +38,7 @@ ch.queue('hello')
 #### Initialization
 ``` Javascript
 const PRMQ = require('prmq');
-const prmq = new PRMQ('amqp://localhost');
-const ch = await prmq.channel();
+const ch = await PRMQ.channel('amqp://localhost');
 ```
 
 #### Hello World
@@ -89,7 +88,7 @@ await ch.queue('')
     console.log(msg);
   })
   .exec()
-  
+
 await ex.publish('Hello World')
   .exec();
 
@@ -132,7 +131,7 @@ await ex.publishWithRoutingKey('A critical kernel error', 'kern.critical')
 ```
 
 ## Todo
-* RPC Support 
+* RPC Support
 * API Docs
 * JSDoc code
 * Typescript Support

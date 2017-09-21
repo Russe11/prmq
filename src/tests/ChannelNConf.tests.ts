@@ -6,11 +6,10 @@
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import PRMQ = require('../PRMQ')
+import * as PRMQ from '../PRMQ';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
-
 
 describe('Channels', () => {
 

@@ -29,10 +29,10 @@ export class ChannelBase {
 
   public queueName: string;
   public closed: boolean = false;
-  public ch;
+  public ch: any;
   public shouldAssert: boolean;
 
-  constructor(channel) {
+  constructor(channel: any) {
     this.ch = channel;
   }
 
@@ -83,7 +83,7 @@ export class ChannelBase {
    */
   public async deleteExchangesAndQueues(exchanges: string[], queues: string[] = [])  {
     await P.map(queues, queue => this.ch.deleteQueue(queue))
-      .then(() => P.map(exchanges, exchange => this.ch.deleteExchange(exchange)))
+      .then(() => P.map(exchanges, exchange => this.ch.deleteExchange(exchange)));
   }
 
 

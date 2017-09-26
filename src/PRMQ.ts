@@ -33,10 +33,7 @@ const debug = require('debug')('http');
  * Create a RabbitMQ channel
  */
 export async function channel(connectionString?: string, prefetch?: number) {
-  if (!this.open) {
-    this.open = amqp.connect(connectionString);
-  }
-  const conn = await this.open;
+  const conn = await amqp.connect(connectionString);
   let ch = await conn.createChannel();
   ch.on('error', async (err) => {
     debug('Channel Error %o', err.message);
@@ -48,11 +45,8 @@ export async function channel(connectionString?: string, prefetch?: number) {
   return new ChannelNConf(ch);
 }
 
-export async function confirmChannel(prefetch?: number) {
-  if (!this.open) {
-    this.open = amqp.connect(this.connectionString);
-  }
-  const conn = await this.open;
+export async function confirmChannel(connectionString?: string, prefetch?: number) {
+  const conn = await amqp.connect(connectionString);
   let ch = await conn.createConfirmChannel();
   ch.on('error', async (err) => {
     debug('Channel Error %o', err.message);

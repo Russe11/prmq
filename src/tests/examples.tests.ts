@@ -1,18 +1,20 @@
-/* eslint-disable no-unused-vars,no-console,import/no-extraneous-dependencies,padded-blocks */
+/**
+ * Examples tests
+ */
 
 import {expect} from 'chai';
-import PRMQ = require('../PRMQ')
+import * as PRMQ from '../PRMQ';
 
 describe('Examples', () => {
 
   beforeEach( async() => {
 
-    const ch = await PRMQ.channel()
+    const ch = await PRMQ.channel();
     await ch.deleteExchangesAndQueues([
       'test_exchange',
       'logs',
       'topic',
-      'direct_logs',
+      'direct_logs'
     ], [
       'test_queue',
       'task_queue',

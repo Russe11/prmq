@@ -6,10 +6,8 @@
   "scripts": {
     "test": "nyc mocha --require ts-node/register src/**/*.tests.ts --timeout 6000",
     "coverage": "nyc report --reporter=text-lcov > coverage.lcov",
-    "postinstall": "postinstall-build lib --script buildProd",
-    "build": "rm -rf dist && tsc -p ./tsconfig.json",
-    "buildProd": "tsc",
-    "prepublishOnly": "tsc"
+    "postinstall": "tsc",
+    "build": "rm -rf dist && tsc -p ./tsconfig.json"
   },
   "repository": {
     "type": "git",
@@ -28,16 +26,15 @@
     "amqplib": "^0.5.1",
     "bluebird": "^3.5.0",
     "debug": "^3.0.1",
-    "postinstall-build": "^5.0.1",
-    "ts-node": "^3.3.0"
-  },
-  "devDependencies": {
     "@types/amqplib": "^0.5.4",
     "@types/bluebird": "^3.5.11",
     "@types/chai": "^4.0.4",
     "@types/chai-as-promised": "^7.1.0",
     "@types/mocha": "^2.2.43",
     "@types/node": "^8.0.28",
+    "ts-node": "^3.3.0"
+  },
+  "devDependencies": {
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "codecov": "^2.3.0",

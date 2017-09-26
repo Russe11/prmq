@@ -1,4 +1,14 @@
-2017-09-20, Version 0.4.11
+2017-09-26, Version 0.4.12
+==========================
+
+ * Removed Postinstall package and added @types as prod deps (Russell Lewis)
+
+ * Updated readme (Russell Lewis)
+
+ * Removed redundant imports (Russell Lewis)
+
+
+2017-09-19, Version 0.4.11
 ==========================
 
  * Improved compatability for using the library (Russell Lewis)
@@ -68,6 +78,12 @@
 
 
 2017-09-19, Version 0.4.2
+=========================
+
+ * Removed /dist (Russell Lewis)
+
+
+2017-09-19, Version 0.4.1
 =========================
 
  * Removed /dist (Russell Lewis)

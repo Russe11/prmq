@@ -33,6 +33,11 @@ const debug = require('debug')('http');
  * Create a RabbitMQ channel
  */
 export async function channel(connectionString?: string, prefetch?: number, logResults?: boolean) {
+
+  if (process.env.PRMQ_LOG === 'true') {
+    logResults = true;
+  }
+
   const conn = await amqp.connect(connectionString);
   let ch = await conn.createChannel();
   ch.on('error', async (err) => {
@@ -46,6 +51,11 @@ export async function channel(connectionString?: string, prefetch?: number, logR
 }
 
 export async function confirmChannel(connectionString?: string, prefetch?: number, logResults?: boolean) {
+
+  if (process.env.PRMQ_LOG === 'true') {
+    logResults = true;
+  }
+
   const conn = await amqp.connect(connectionString);
   let ch = await conn.createConfirmChannel();
   ch.on('error', async (err) => {

@@ -53,11 +53,9 @@ describe('Examples', () => {
   });
 
   it('PubSub', (done) => {
-
     PRMQ.channel()
       .then(async (ch) => {
         const ex = await ch.exchangeFanout('logs').exec();
-
         await ch.queue('')
           .bind(ex)
           .consume((msg) => {
@@ -65,10 +63,8 @@ describe('Examples', () => {
             done();
           })
           .exec();
-
         await ex.publish('Hello World').exec();
       });
-
   });
 
   it('Routing', (done) => {
@@ -95,7 +91,6 @@ describe('Examples', () => {
   });
 
   it('Topics', (done) => {
-
     PRMQ.channel()
       .then(async (ch) => {
         const ex = await ch.exchangeTopic('topic', { durable: false }).exec();
@@ -109,9 +104,6 @@ describe('Examples', () => {
         return await ex.publishWithRoutingKey('A critical kernel error', 'kern.critical')
           .exec();
       });
-
-
   });
-
 });
 

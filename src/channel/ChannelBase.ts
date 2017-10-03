@@ -22,7 +22,7 @@
  * PRMQ Channel
  */
 
-import {Options, Replies} from 'amqplib';
+import {Options, Replies, Connection} from 'amqplib';
 import * as P from 'bluebird';
 
 export class ChannelBase {
@@ -30,10 +30,12 @@ export class ChannelBase {
   public queueName: string;
   public closed: boolean = false;
   public ch: any;
+  public conn: Connection;
   public shouldAssert: boolean;
 
-  constructor(channel: any) {
+  constructor(channel: any, conn: Connection) {
     this.ch = channel;
+    this.conn = conn;
   }
 
   /**
@@ -68,6 +70,7 @@ export class ChannelBase {
    */
   public async close() {
     await this.ch.close();
+    await this.conn.close();
     this.closed = true;
     return this;
   }

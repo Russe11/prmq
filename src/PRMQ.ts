@@ -47,7 +47,7 @@ export async function channel(connectionString?: string, prefetch?: number, logR
   if (prefetch) {
     await ch.prefetch(prefetch);
   }
-  return new ChannelNConf(ch, logResults);
+  return new ChannelNConf(ch, conn, logResults);
 }
 
 export async function confirmChannel(connectionString?: string, prefetch?: number, logResults?: boolean) {
@@ -65,5 +65,5 @@ export async function confirmChannel(connectionString?: string, prefetch?: numbe
   if (prefetch) {
     await ch.prefetch(prefetch);
   }
-  return new ChannelConf(ch, logResults);
+  return new ChannelConf(ch, conn, logResults);
 }

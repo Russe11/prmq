@@ -23,7 +23,7 @@
  */
 
 import {QueueConf} from '../queue/QueueConf';
-import {ConfirmChannel, Options, Replies} from 'amqplib';
+import {ConfirmChannel, Options, Replies, Connection} from 'amqplib';
 import {ExchangeTypes} from '../exchange/ExchangeBase';
 import * as Bluebird from 'bluebird';
 import {ChannelBase} from './ChannelBase';
@@ -31,8 +31,8 @@ import {ExchangeConf} from '../exchange/ExchangeConf';
 
 export class ChannelConf extends ChannelBase {
 
-  constructor(channel: ConfirmChannel, private  logResults: boolean = false) {
-    super(channel);
+  constructor(channel: ConfirmChannel, conn: Connection, private  logResults: boolean = false) {
+    super(channel, conn);
   }
 
   public queue(queueName: string, options?: Options.AssertQueue) {

@@ -23,15 +23,15 @@
  */
 
 import {QueueNConf} from '../queue/QueueNConf';
-import {Channel, Options} from 'amqplib';
+import {Channel, Connection, Options} from 'amqplib';
 import {ExchangeTypes} from '../exchange/ExchangeBase';
 import {ChannelBase} from './ChannelBase';
 import {ExchangeNConf} from '../exchange/ExchangeNConf';
 
 export class ChannelNConf extends ChannelBase {
 
-  constructor(channel: Channel, private logResults: boolean = false) {
-    super(channel);
+  constructor(channel: Channel, conn: Connection, private logResults: boolean = false) {
+    super(channel, conn);
   }
 
   public queue(queueName: string, options?: Options.AssertQueue) {

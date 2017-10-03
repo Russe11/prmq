@@ -1,3 +1,9 @@
+2017-10-03, Version 0.4.14
+==========================
+
+ * Close connection when closing channel (Russell Lewis)
+
+
 2017-10-03, Version 0.4.13
 ==========================
 

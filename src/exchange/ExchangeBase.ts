@@ -36,13 +36,19 @@ export class ExchangeBase {
   public shouldAssert: boolean = false;
 
   constructor(
-    public channel,
+    public channel: any,
     public exchangeName: string,
     public exchangeType: ExchangeTypes,
     public options?: Options.AssertExchange) {
   }
 
-  public async execAssert(){
+  public results: any = {
+    publish: []
+  };
+
+  public logResults: boolean;
+
+  public async execAssert() {
     if (this.shouldAssert) {
       await this.channel.assertExchange(this.exchangeName, this.exchangeType, this.options);
       this.shouldAssert = false;

@@ -34,9 +34,15 @@ export class QueueBase {
   public binds: any[] = [];
   public q: AssertQueue;
 
-  constructor(public ch, public queueName: string, public options?: Options.AssertQueue) {
+  constructor(public ch: any, public queueName: string, public options?: Options.AssertQueue) {
 
   }
+
+  public results: any = {
+    send: []
+  };
+
+  public logResults: boolean;
 
   public async execAssert() {
     if (this.shouldAssert) {

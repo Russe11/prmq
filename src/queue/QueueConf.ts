@@ -25,7 +25,7 @@
 import {ConfirmChannel, Options} from 'amqplib';
 import {QueueBase} from './QueueBase';
 
-export class QueueConf extends QueueBase{
+export class QueueConf extends QueueBase {
 
   public  shouldAssert: boolean = false;
   private sends: { message: any, options?: Options.Publish, confirmationFn: Function}[] = [];
@@ -40,8 +40,16 @@ export class QueueConf extends QueueBase{
     await this.execConsumers();
     this.sends.forEach(async (s) => {
       const msg = typeof s.message === 'string' ? s.message : JSON.stringify(s.message);
-      await this.ch.sendToQueue(this.q.queue, Buffer.from(msg), s.options, s.confirmationFn);
+      const sendRes = await this.ch.sendToQueue(this.q.queue, Buffer.from(msg), s.options, s.confirmationFn);
+      if (this.logResults === true) {
+        this.results.send.push({
+          q: this.q.queue,
+          msg,
+          result: sendRes
+        });
+      }
     });
+    return this;
   }
 
   public send(message: any, options: Options.Publish, confirmationFn: Function) {

@@ -30,18 +30,20 @@ import {ExchangeNConf} from '../exchange/ExchangeNConf';
 
 export class ChannelNConf extends ChannelBase {
 
-  constructor(channel: Channel) {
+  constructor(channel: Channel, private logResults: boolean = false) {
     super(channel);
   }
 
   public queue(queueName: string, options?: Options.AssertQueue) {
     const q = new QueueNConf(this.ch, queueName, options);
+    q.logResults = this.logResults;
     return q.assert();
   }
 
 
   public exchange(exchangeName: string, exchangeType: ExchangeTypes, options?: Options.AssertExchange) {
     const ex = new ExchangeNConf(this.ch, exchangeName, exchangeType, options);
+    ex.logResults = this.logResults;
     return ex.assert();
   }
 

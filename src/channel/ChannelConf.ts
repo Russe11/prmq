@@ -31,12 +31,13 @@ import {ExchangeConf} from '../exchange/ExchangeConf';
 
 export class ChannelConf extends ChannelBase {
 
-  constructor(channel: ConfirmChannel) {
-    super(channel)
+  constructor(channel: ConfirmChannel, private  logResults: boolean = false) {
+    super(channel);
   }
 
   public queue(queueName: string, options?: Options.AssertQueue) {
     const q = new QueueConf(this.ch, queueName, options);
+    q.logResults = this.logResults;
     return q.assert();
   }
 
@@ -69,6 +70,7 @@ export class ChannelConf extends ChannelBase {
 
   public exchange(exchangeName: string, exchangeType: ExchangeTypes, options?: Options.AssertExchange) {
     const ex = new ExchangeConf(this.ch, exchangeName, exchangeType, options);
+    ex.logResults = this.logResults;
     return ex.assert();
   }
 

@@ -24,7 +24,7 @@ describe('Examples', () => {
   });
 
   it('HelloWorld', (done) => {
-    PRMQ.channel()
+    PRMQ.channel(null, null, true)
       .then(async (ch) => {
         await ch.queue('hello')
           .consume((msg) => {
@@ -37,7 +37,7 @@ describe('Examples', () => {
   });
 
   it('Worker', (done) => {
-    PRMQ.channel('', 1)
+    PRMQ.channel('', 1, true)
       .then(async (ch) => {
         await ch.queue('task_queue')
           .consumeWithAck((msg, then) => {

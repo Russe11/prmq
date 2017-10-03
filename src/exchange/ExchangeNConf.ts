@@ -27,16 +27,15 @@ import {ExchangeBase, ExchangeTypes} from './ExchangeBase';
 
 export class ExchangeNConf extends ExchangeBase {
 
-  sends = [];
+  private sends: any = [];
 
   constructor(
     channel: Channel,
     exchangeName: string,
     exchangeType: ExchangeTypes,
     options?: Options.AssertExchange) {
-    super(channel, exchangeName, exchangeType, options)
+    super(channel, exchangeName, exchangeType, options);
   }
-
 
   /**
    * Execute all actions currently pending on the exchange
@@ -48,10 +47,19 @@ export class ExchangeNConf extends ExchangeBase {
 
     this.sends.forEach(async (s) => {
       const msg = typeof s.message === 'string' ? s.message : JSON.stringify(s.message);
+      let publishRes;
       if (!s.routingKey) {
-        await this.channel.publish(this.exchangeName, '', Buffer.from(msg));
+        publishRes = await this.channel.publish(this.exchangeName, '', Buffer.from(msg));
       } else {
-        await this.channel.publish(this.exchangeName, s.routingKey, Buffer.from(msg));
+        publishRes = await this.channel.publish(this.exchangeName, s.routingKey, Buffer.from(msg));
+      }
+      if (this.logResults === true) {
+        this.results.publish.push({
+          ex: this.exchangeName,
+          routingKey: s.routingKey,
+          msg,
+          result: publishRes
+        });
       }
     });
 

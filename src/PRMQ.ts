@@ -32,7 +32,7 @@ const debug = require('debug')('http');
 /**
  * Create a RabbitMQ channel
  */
-export async function channel(connectionString?: string, prefetch?: number) {
+export async function channel(connectionString?: string, prefetch?: number, logResults?: boolean) {
   const conn = await amqp.connect(connectionString);
   let ch = await conn.createChannel();
   ch.on('error', async (err) => {
@@ -42,10 +42,10 @@ export async function channel(connectionString?: string, prefetch?: number) {
   if (prefetch) {
     await ch.prefetch(prefetch);
   }
-  return new ChannelNConf(ch);
+  return new ChannelNConf(ch, logResults);
 }
 
-export async function confirmChannel(connectionString?: string, prefetch?: number) {
+export async function confirmChannel(connectionString?: string, prefetch?: number, logResults?: boolean) {
   const conn = await amqp.connect(connectionString);
   let ch = await conn.createConfirmChannel();
   ch.on('error', async (err) => {
@@ -55,5 +55,5 @@ export async function confirmChannel(connectionString?: string, prefetch?: numbe
   if (prefetch) {
     await ch.prefetch(prefetch);
   }
-  return new ChannelConf(ch);
+  return new ChannelConf(ch, logResults);
 }

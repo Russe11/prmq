@@ -34,9 +34,8 @@ export class ExchangeConf extends ExchangeBase {
     exchangeName: string,
     exchangeType: ExchangeTypes,
     options?: Options.AssertExchange) {
-    super(channel, exchangeName, exchangeType, options)
+    super(channel, exchangeName, exchangeType, options);
   }
-
 
   /**
    * Execute all actions currently pending on the exchange
@@ -48,10 +47,19 @@ export class ExchangeConf extends ExchangeBase {
 
     this.sends.forEach(async (s) => {
       const msg = typeof s.message === 'string' ? s.message : JSON.stringify(s.message);
+      let publishRes;
       if (!s.routingKey) {
-        await this.channel.publish(this.exchangeName, '', Buffer.from(msg), s.confirmationFn);
+        publishRes = await this.channel.publish(this.exchangeName, '', Buffer.from(msg), s.confirmationFn);
       } else {
-        await this.channel.publish(this.exchangeName, s.routingKey, Buffer.from(msg), s.confirmationFn);
+        publishRes = await this.channel.publish(this.exchangeName, s.routingKey, Buffer.from(msg), s.confirmationFn);
+      }
+      if (this.logResults === true) {
+        this.results.publish.push({
+          ex: this.exchangeName,
+          routingKey: s.routingKey,
+          msg,
+          result: publishRes
+        });
       }
     });
     this.sends = [];

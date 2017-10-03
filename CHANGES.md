@@ -1,3 +1,13 @@
+2017-10-03, Version 0.4.13
+==========================
+
+ * Added 'PRMQ_LOG' env variable to switch logging on for testing (Russell Lewis)
+
+ * Added results object to ex's and q's for storing result from sends (Russell Lewis)
+
+ * Added some tests and fixed ConfirmChannel initialization (Russell Lewis)
+
+
 2017-09-26, Version 0.4.12
 ==========================
 

@@ -11,24 +11,22 @@ describe('Examples', () => {
 
     const ch = await PRMQ.channel();
     await ch.deleteExchangesAndQueues([
-      'test_exchange',
-      'logs',
-      'topic',
-      'direct_logs'
+      'prmq_logs',
+      'prmq_topic',
     ], [
-      'test_queue',
-      'task_queue',
-      'logs',
-      'hello',
+      'prmq_task_queue',
+      'prmq_logs',
+      'prmq_hello',
     ]);
   });
 
   it('HelloWorld', (done) => {
-    PRMQ.channel(null, null, true)
+    PRMQ.channel({ logResults: true })
       .then(async (ch) => {
-        await ch.queue('hello')
-          .consume((msg) => {
+        await ch.queue('prmq_hello')
+          .consume(async (msg) => {
             expect(msg).eq('Hello World!');
+            await ch.close();
             done();
           })
           .send('Hello World!')
@@ -37,9 +35,9 @@ describe('Examples', () => {
   });
 
   it('Worker', (done) => {
-    PRMQ.channel('', 1, true)
+    PRMQ.channel({ logResults: true, prefetch: 1})
       .then(async (ch) => {
-        await ch.queue('task_queue')
+        await ch.queue('prmq_task_queue')
           .consumeWithAck((msg, then) => {
             setTimeout(() => {
               expect(msg).to.eq('Hello World!');
@@ -55,7 +53,7 @@ describe('Examples', () => {
   it('PubSub', (done) => {
     PRMQ.channel()
       .then(async (ch) => {
-        const ex = await ch.exchangeFanout('logs').exec();
+        const ex = await ch.exchangeFanout('prmq_logs').exec();
         await ch.queue('')
           .bind(ex)
           .consume((msg) => {
@@ -72,7 +70,7 @@ describe('Examples', () => {
     const severity = 'info';
     PRMQ.channel()
       .then(async (ch) => {
-        const ex = await ch.exchangeDirect('logs').exec();
+        const ex = await ch.exchangeDirect('prmq_logs').exec();
         await ch.queue('', { exclusive: true })
           .bindWithRoutings(ex, [
             'info',
@@ -93,7 +91,7 @@ describe('Examples', () => {
   it('Topics', (done) => {
     PRMQ.channel()
       .then(async (ch) => {
-        const ex = await ch.exchangeTopic('topic', { durable: false }).exec();
+        const ex = await ch.exchangeTopic('prmq_topic', { durable: false }).exec();
         await ch.queue('', { exclusive: true })
           .bindWithRouting(ex, 'kern.*')
           .consumeRaw((msg) => {

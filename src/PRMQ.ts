@@ -22,48 +22,61 @@
  * PRMQ Library
  */
 
-import * as amqp from 'amqplib';
+import {connect, Connection} from 'amqplib';
 
 import {ChannelConf} from './channel/ChannelConf';
 import {ChannelNConf} from './channel/ChannelNConf';
 
 const debug = require('debug')('http');
 
+export interface PRMQChannelOptions {
+  connectionString?: string;
+  connection?: Connection;
+  prefetch?: number;
+  logResults?: boolean;
+}
+
 /**
- * Create a RabbitMQ channel
+ * Create a new Channel
+ * @param {PRMQChannelOptions} options
+ * @returns {Promise<ChannelNConf>}
  */
-export async function channel(connectionString?: string, prefetch?: number, logResults?: boolean) {
+export async function channel(options: PRMQChannelOptions = {}) {
+  const conn = await createConnection(options);
 
-  if (process.env.PRMQ_LOG === 'true') {
-    logResults = true;
-  }
-
-  const conn = await amqp.connect(connectionString);
   let ch = await conn.createChannel();
   ch.on('error', async (err) => {
     debug('Channel Error %o', err.message);
     ch = await conn.createChannel();
   });
-  if (prefetch) {
-    await ch.prefetch(prefetch);
-  }
-  return new ChannelNConf(ch, conn, logResults);
+  await prefetch(ch, options);
+  return new ChannelNConf(ch, conn, options.logResults);
 }
 
-export async function confirmChannel(connectionString?: string, prefetch?: number, logResults?: boolean) {
-
-  if (process.env.PRMQ_LOG === 'true') {
-    logResults = true;
-  }
-
-  const conn = await amqp.connect(connectionString);
+export async function confirmChannel(options: PRMQChannelOptions = {}) {
+  const conn = await createConnection(options);
   let ch = await conn.createConfirmChannel();
   ch.on('error', async (err) => {
     debug('Channel Error %o', err.message);
     ch = await conn.createConfirmChannel();
   });
-  if (prefetch) {
-    await ch.prefetch(prefetch);
+  await prefetch(ch, options);
+  return new ChannelConf(ch, conn, options.logResults);
+}
+
+export async function createConnection(options: PRMQChannelOptions) {
+  if (process.env.PRMQ_LOG === 'true') {
+    options.logResults = true;
   }
-  return new ChannelConf(ch, conn, logResults);
+  if (options.connection) {
+    return options.connection;
+  } else {
+    return await connect(options.connectionString);
+  }
+}
+
+async function prefetch(ch:any, options: PRMQChannelOptions) {
+  if (options.prefetch) {
+    await ch.prefetch(options.prefetch);
+  }
 }

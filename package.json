@@ -4,7 +4,7 @@
   "description": "Promise Based AMPQ Wrapper for JS",
   "main": "dist/PRMQ.js",
   "scripts": {
-    "test": "nyc mocha --require ts-node/register src/**/*.tests.ts --timeout 6000",
+    "test": "nyc mocha --require ts-node/register src/**/*.spec.ts --timeout 6000",
     "coverage": "nyc report --reporter=text-lcov > coverage.lcov",
     "postinstall": "tsc",
     "build": "rm -rf dist && tsc -p ./tsconfig.json"

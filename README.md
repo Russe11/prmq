@@ -36,10 +36,28 @@ ch.queue('hello')
 
 
 #### Initialization
-``` Javascript
+
+``` Javascript 
 const PRMQ = require('prmq');
-const ch = await PRMQ.channel('amqp://localhost');
 ```
+
+With connection string
+``` Javascript
+const ch = await PRMQ.channel({connectionString: 'amqp://localhost'});
+```
+
+With connection object
+``` Javascript
+const conn = await PRMQ.createConnection({connectionString: 'amqp://localhost' });
+const ch = await PRMQ.channel({connection: conn});
+```
+
+Closing a connection once done
+``` Javascript 
+await ch.close();
+```
+
+
 
 #### Hello World
 https://www.rabbitmq.com/tutorials/tutorial-five-javascript.html

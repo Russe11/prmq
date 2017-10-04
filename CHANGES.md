@@ -1,4 +1,10 @@
-2017-10-04, Version 0.5.0
+2017-10-04, Version 0.5.1
+=========================
+
+ * Added await to incoming connection incase the promise is not resolved (Russell Lewis)
+
+
+2017-10-03, Version 0.5.0
 =========================
 
  * Updated packages (Russell Lewis)
@@ -102,6 +108,12 @@
 
 
 2017-09-19, Version 0.4.2
+=========================
+
+ * Removed /dist (Russell Lewis)
+
+
+2017-09-19, Version 0.4.1
 =========================
 
  * Removed /dist (Russell Lewis)

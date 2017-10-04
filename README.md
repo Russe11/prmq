@@ -7,6 +7,8 @@
 # PRMQ
 ### Promise based amqplib wrapper For RabbitMQ and Javascript
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/Russe11/prmq.svg)](https://greenkeeper.io/)
+
  *Based on https://github.com/squaremo/amqp.node by Michael Bridgen*
 
 **This project is still under heavy development and the API will likely change.

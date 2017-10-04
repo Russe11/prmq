@@ -23,30 +23,30 @@
   },
   "homepage": "https://github.com/Russe11/prmq#readme",
   "dependencies": {
-    "amqplib": "^0.5.1",
-    "bluebird": "^3.5.0",
-    "debug": "^3.0.1",
     "@types/amqplib": "^0.5.4",
-    "@types/bluebird": "^3.5.11",
+    "@types/bluebird": "^3.5.13",
     "@types/chai": "^4.0.4",
     "@types/chai-as-promised": "^7.1.0",
     "@types/mocha": "^2.2.43",
-    "@types/node": "^8.0.28",
+    "@types/node": "^8.0.32",
+    "amqplib": "^0.5.1",
+    "bluebird": "^3.5.0",
+    "debug": "^3.1.0",
     "ts-node": "^3.3.0"
   },
   "devDependencies": {
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "codecov": "^2.3.0",
-    "eslint": "^4.7.1",
-    "eslint-config-airbnb-base": "^12.0.0",
+    "eslint": "^4.8.0",
+    "eslint-config-airbnb-base": "^12.0.1",
     "eslint-plugin-import": "^2.7.0",
     "istanbul": "^0.4.5",
     "mocha": "^3.5.3",
     "nyc": "^11.2.1",
     "tslint": "^5.7.0",
     "tslint-microsoft-contrib": "^5.0.1",
-    "typescript": "^2.5.2"
+    "typescript": "^2.5.3"
   },
   "buildDependencies": [
     "@types/amqplib",

@@ -69,13 +69,13 @@ export async function createConnection(options: PRMQChannelOptions) {
     options.logResults = true;
   }
   if (options.connection) {
-    return options.connection;
+    return await options.connection;
   } else {
     return await connect(options.connectionString);
   }
 }
 
-async function prefetch(ch:any, options: PRMQChannelOptions) {
+async function prefetch(ch: any, options: PRMQChannelOptions) {
   if (options.prefetch) {
     await ch.prefetch(options.prefetch);
   }

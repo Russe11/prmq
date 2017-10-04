@@ -16,6 +16,9 @@ describe('Connection', () => {
   it('should create channel using connection object', async () => {
     const conn = await PRMQ.createConnection({connectionString: 'amqp://localhost' });
     const ch = await PRMQ.channel({ connection: conn });
+    await ch.queue('prmq_queue_1')
+      .assert()
+      .exec();
     expect(ch.isClosed()).to.be.false;
   });
 

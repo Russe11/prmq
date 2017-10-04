@@ -151,10 +151,8 @@ await ex.publishWithRoutingKey('A critical kernel error', 'kern.critical')
 ```
 
 ## Todo
-* RPC Support
 * API Docs
 * JSDoc code
-* Typescript Support
 
 ## License
 

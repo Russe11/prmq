@@ -16,7 +16,12 @@ Compatible with Node.js v6 or higher**
 
 #### Changelog 
 
- * v0.6.0 - .exec() is no longer required.
+#####v0.6.0:
+
+  * Exchanges and Queues are now resolvable using the promise pattern
+  * exec() is no longer required. Just resolve the chain.
+  * RPC is supported
+ 
 
 
 #### Initialization
@@ -80,7 +85,7 @@ https://www.rabbitmq.com/tutorials/tutorial-three-javascript.html
 ``` Javascript
 const ch = await prmq.channel();
 const ex = ch.exchangeFanout('logs');
-await ch.queue('')
+await ch.queue()
   .bind(ex)
   .consume((msg) => {
     console.log(msg);
@@ -124,6 +129,7 @@ await ex.publishWithRoutingKey('A critical kernel error', 'kern.critical');
 ```
 
 ### RPC
+https://www.rabbitmq.com/tutorials/tutorial-six-javascript.html
 
 ``` Javascript
 PRMQ.channel({ prefetch: 1 })

@@ -35,7 +35,9 @@ export class ChannelConf extends ChannelBase {
     super(channel, conn);
   }
 
-  public queue(queueName: string, options?: Options.AssertQueue) {
+
+
+  public queue(queueName: string = '', options?: Options.AssertQueue) {
     const promise = Promise.resolve();
     const q = new QueueConf(promise, this.ch, queueName, options);
     q.logResults = this.logResults;
@@ -73,7 +75,6 @@ export class ChannelConf extends ChannelBase {
     const promise = Promise.resolve();
     const ex = new ExchangeConf(promise, this.ch, exchangeName, exchangeType, options);
     ex.logResults = this.logResults;
-    ex.assert();
     return ex;
   }
 

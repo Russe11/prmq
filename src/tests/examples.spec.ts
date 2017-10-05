@@ -17,6 +17,7 @@ describe('Examples', () => {
       'prmq_task_queue',
       'prmq_logs',
       'prmq_hello',
+      'prmq_rpc_queue'
     ]);
   });
 
@@ -50,7 +51,7 @@ describe('Examples', () => {
     PRMQ.channel()
       .then(async (ch) => {
         const ex = ch.exchangeFanout('prmq_logs');
-        await ch.queue('')
+        await ch.queue()
           .bind(ex)
           .consume((msg) => {
             expect(msg).to.eq('Hello World');

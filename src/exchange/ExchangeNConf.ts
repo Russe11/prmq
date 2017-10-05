@@ -40,7 +40,6 @@ export class ExchangeNConf extends ExchangeBase {
 
   /**
    * Execute all actions currently pending on the exchange
-   * @returns {Promise.<this>}
    */
   public async exec() {
 

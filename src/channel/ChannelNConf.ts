@@ -34,7 +34,7 @@ export class ChannelNConf extends ChannelBase {
     super(channel, conn);
   }
 
-  public queue(queueName: string, options?: Options.AssertQueue) {
+  public queue(queueName: string = '', options?: Options.AssertQueue) {
     const promise = Promise.resolve();
     const q = new QueueNConf(promise, this.ch, queueName, options);
     q.logResults = this.logResults;

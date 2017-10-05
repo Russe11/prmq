@@ -16,7 +16,7 @@ Compatible with Node.js v6 or higher**
 
 #### Changelog 
 
-#####v0.6.0:
+##### v0.6.0:
 
   * Exchanges and Queues are now resolvable using the promise pattern
   * exec() is no longer required. Just resolve the chain.

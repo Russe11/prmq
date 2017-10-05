@@ -34,8 +34,8 @@ export class QueueBase {
   public binds: any[] = [];
   public q: AssertQueue;
 
-  constructor(public ch: any, public queueName: string, public options?: Options.AssertQueue) {
-
+  constructor(public promise: Promise<any>, public ch: any, public queueName: string, public options?: Options.AssertQueue) {
+    this.assert();
   }
 
   public results: any = {
@@ -43,32 +43,6 @@ export class QueueBase {
   };
 
   public logResults: boolean;
-
-  public async execAssert() {
-    if (this.shouldAssert) {
-      this.q = await this.ch.assertQueue(this.queueName, this.options);
-    }
-  }
-
-  public async execBinds() {
-    this.binds.forEach(async (b) => {
-      await this.ch.bindQueue(this.q.queue, b.exchangeName, b.routing);
-    });
-  }
-
-  public async execConsumers() {
-    this.consumers.forEach((c) => {
-      if (c.noAck === true && c.raw === false) {
-        this.execConsume(c.callbackFn);
-      } else if (c.noAck === false && c.raw === false) {
-        this.execConsumeWithAck(c.callbackFn);
-      } else if (c.noAck === true && c.raw === true) {
-        this.execConsumeRaw(c.callbackFn);
-      } else if (c.noAck === false && c.raw === true) {
-        this.execConsumeRawWithAck(c.callbackFn);
-      }
-    });
-  }
 
   public getQueueName() {
     return this.queueName;
@@ -92,44 +66,85 @@ export class QueueBase {
    * Assert a queue - Channel#assertQueue
    */
   public assert() {
-    this.shouldAssert = true;
+    this.promise = this.promise
+      .then(() => {
+        console.log("ASSERT", this.queueName)
+        return this.ch.assertQueue(this.queueName, this.options);
+      })
+      .then((q) => {
+        this.q = q;
+      });
+
     return this;
   }
 
   public bind(exchange: ExchangeBase) {
-    this.binds.push({ exchangeName: exchange.ExchangeName });
+
+    this.promise = this.promise.then(() => {
+      return this.ch.bindQueue(this.q.queue, exchange.exchangeName);
+    })
+
     return this;
   }
 
   public bindWithRouting(exchange: ExchangeBase, routing: string) {
-    this.binds.push({ exchangeName: exchange.ExchangeName, routing });
-    return this;
-  }
-
-  public bindWithRoutings(exchange: ExchangeBase, routings: string[]) {
-    routings.forEach((routing) => {
-      this.binds.push({ exchangeName: exchange.ExchangeName, routing });
+    this.promise = this.promise.then(() => {
+      return this.ch.bindQueue(this.q.queue, exchange.exchangeName, routing);
     });
     return this;
   }
 
-  public consume(callbackFn: (msg: any, then: ConsumeThen) => void) {
-    this.consumers.push({ noAck: true, raw: false, callbackFn });
+  public bindWithRoutings(exchange: ExchangeBase, routings: string[]) {
+    console.log("BWR")
+    routings.forEach((routing) => {
+      this.promise = this.promise.then(() => {
+        console.log("BW", this.q.queue, exchange.exchangeName, routing)
+        return this.ch.bindQueue(this.q.queue, exchange.exchangeName, routing);
+      });
+    });
+    return this;
+  }
+
+  public consume(callbackFn: (msg: any) => void) {
+    this.promise = this.promise.then(() => {
+      return this.ch.consume(this.q.queue, (msg) => {
+        if (msg !== null) {
+          const content = msg.content.toString();
+          callbackFn(content.startsWith('{') ? JSON.parse(content) : content);
+        }
+      }, { noAck: true });
+    });
     return this;
   }
 
   public consumeRaw(callbackFn: (msg: Message) => void) {
-    this.consumers.push({ noAck: true, raw: true, callbackFn });
+
+    this.promise = this.promise.then(() => {
+      return this.ch.consume(this.q.queue, msg => callbackFn(msg), { noAck: true });
+    });
     return this;
   }
 
   public consumeWithAck(callbackFn: (msg: any, then: ConsumeThen) => void) {
-    this.consumers.push({ noAck: false, raw: false, callbackFn });
+    this.promise = this.promise.then(() => {
+      return this.ch.consume(this.q.queue, (msg) => {
+        if (msg !== null) {
+          const content = msg.content.toString();
+          callbackFn(
+            content.startsWith('{') ? JSON.parse(content) : content,
+            new ConsumeThen(this.ch, msg)
+          );
+        }
+      }, { noAck: false });
+    });
     return this;
   }
 
   public consumeRawWithAck(callbackFn: (msg: Message, then: ConsumeThen) => void) {
-    this.consumers.push({ noAck: false, raw: true, callbackFn });
+    this.promise = this.promise.then(() => {
+      return this.ch.consume(this.q.queue, msg => callbackFn(msg ,new ConsumeThen(this.ch, msg)), { noAck: false });
+    });
+
     return this;
   }
 
@@ -141,41 +156,4 @@ export class QueueBase {
     return this;
   }
 
-  /**
-   */
-  public execConsume(callbackFn: Function) {
-    this.ch.consume(this.q.queue, (msg) => {
-      if (msg !== null) {
-        const content = msg.content.toString();
-        callbackFn(content.startsWith('{') ? JSON.parse(content) : content);
-      }
-    }, { noAck: true });
-    return this;
-  }
-
-  public execConsumeWithAck(callbackFn: Function) {
-    this.ch.consume(this.q.queue, (msg) => {
-      if (msg !== null) {
-        const content = msg.content.toString();
-        callbackFn(
-          content.startsWith('{') ? JSON.parse(content) : content,
-          new ConsumeThen(this.ch, msg)
-        );
-      }
-    }, { noAck: false });
-  }
-
-  public execConsumeRaw(callbackFn: Function) {
-    this.ch.consume(this.q.queue, msg => callbackFn(msg, () => {
-      this.ch.ack(msg);
-    }), { noAck: true });
-    return this;
-  }
-
-  public execConsumeRawWithAck(callbackFn: Function) {
-    this.ch.consume(this.q.queue, msg => callbackFn(msg, () => {
-      this.ch.ack(msg);
-    }), { noAck: false });
-    return this;
-  }
 }

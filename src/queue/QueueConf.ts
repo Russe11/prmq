@@ -27,17 +27,13 @@ import {QueueBase} from './QueueBase';
 
 export class QueueConf extends QueueBase {
 
-  public  shouldAssert: boolean = false;
   private sends: { message: any, options?: Options.Publish, confirmationFn: Function}[] = [];
 
-  constructor(ch: ConfirmChannel, queueName: string, options?: Options.AssertQueue) {
-    super(ch, queueName, options);
+  constructor(promise, ch: ConfirmChannel, queueName: string, options?: Options.AssertQueue) {
+    super(promise, ch, queueName, options);
   }
 
   public async exec() {
-    await this.execAssert();
-    await this.execBinds();
-    await this.execConsumers();
     this.sends.forEach(async (s) => {
       const msg = typeof s.message === 'string' ? s.message : JSON.stringify(s.message);
       const sendRes = await this.ch.sendToQueue(this.q.queue, Buffer.from(msg), s.options, s.confirmationFn);
@@ -54,6 +50,7 @@ export class QueueConf extends QueueBase {
 
   public send(message: any, options: Options.Publish, confirmationFn: Function) {
     this.sends.push({ message, options, confirmationFn });
+    this.promise = this.promise.then(() => this.exec());
     return this;
   }
 

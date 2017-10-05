@@ -36,10 +36,14 @@ export class ExchangeBase {
   public shouldAssert: boolean = false;
 
   constructor(
+    public promise: Promise<any>,
     public channel: any,
     public exchangeName: string,
     public exchangeType: ExchangeTypes,
     public options?: Options.AssertExchange) {
+      this.promise = promise.then(() => {
+        return this.execAssert();
+      })
   }
 
   public results: any = {
@@ -49,10 +53,8 @@ export class ExchangeBase {
   public logResults: boolean;
 
   public async execAssert() {
-    if (this.shouldAssert) {
-      await this.channel.assertExchange(this.exchangeName, this.exchangeType, this.options);
-      this.shouldAssert = false;
-    }
+    await this.channel.assertExchange(this.exchangeName, this.exchangeType, this.options);
+    console.log("ASSERT EXCHANGE")
   }
 
   public get ExchangeName() {

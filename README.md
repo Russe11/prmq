@@ -14,27 +14,9 @@
 **This project is still under heavy development and the API will likely change.
 Compatible with Node.js v6 or higher**
 
-## Usage
+#### Changelog 
 
-
-
-All promise chains are queued until ```.exec``` is called at the end.
-
-So this will not have any affect:
-
-``` javascript
-ch.queue('hello')
-  .consume((msg) => { });
-```
-
-until you add ```.exec()```
-
-``` javascript
-ch.queue('hello')
-  .consume((msg) => { })
-  .exec();
-```
-
+ * v0.6.0 - .exec() is no longer required.
 
 
 #### Initialization
@@ -70,14 +52,12 @@ ch.queue('hello')
   .consume((msg) => {
     console.log("msg");
   })
-  .exec();
 ```
 
 Receiving
 ```
 ch.queue('hello')
-  .send('Hello World!')
-  .exec();
+  .send('Hello World!');
 ```
 
 ### Worker
@@ -91,8 +71,7 @@ await ch.queue('task_queue')
     console.log(msg);
     then.ack();
   })
-  .send('Hello World!', { persistant: true })
-  .exec();
+  .send('Hello World!', { persistant: true });
 ```
 
 ### Publish/Subscribe
@@ -100,34 +79,30 @@ await ch.queue('task_queue')
 https://www.rabbitmq.com/tutorials/tutorial-three-javascript.html
 
 ``` Javascript
-const ex = await ch.exchangeFanout('logs').go();
+const ex = await ch.exchangeFanout('logs');
 
 await ch.queue('')
   .bind(ex)
   .consume((msg) => {
     console.log(msg);
-  })
-  .exec()
+  });
 
-await ex.publish('Hello World')
-  .exec();
+await ex.publish('Hello World');
 
 ```
 
 ### Routing
 
 ``` Javascript
-const ex = await ch.exchangeFanout('logs').go();
+const ex = await ch.exchangeFanout('logs');
 
 await ch.queue('')
   .bind(ex)
   .consume((msg) => {
     console.log(msg);
-  })
-  .exec();
+  });
 
-await ex.publish('Hello World')
-  .exec();
+await ex.publish('Hello World');
 
 ```
 
@@ -135,18 +110,15 @@ await ex.publish('Hello World')
 https://www.rabbitmq.com/tutorials/tutorial-five-javascript.html
 
 ``` Javascript
-const ex = await ch.exchangeTopic('topic', {durable: false})
-  .exec();
+const ex = await ch.exchangeTopic('topic', {durable: false});
 
 await ch.queue('', { exclusive: true })
   .bindWithRouting(ex, 'kern.*')
   .consumeRaw(msg => {
     console.log(" [x] %s:'%s'", msg.fields.routingKey, msg.content.toString());
-  })
-  .exec();
+  });
 
-await ex.publishWithRoutingKey('A critical kernel error', 'kern.critical')
-  .exec();
+await ex.publishWithRoutingKey('A critical kernel error', 'kern.critical');
 
 ```
 

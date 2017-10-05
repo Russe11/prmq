@@ -21,13 +21,6 @@ describe('ChannelConf()', () => {
           expect(q.isDurable()).to.eq(true);
         }));
 
-    it('should queue up a assertion on a queue', () =>
-      PRMQ.confirmChannel()
-        .then((ch) => {
-          const q = ch.queue('prmqTestQueue', { durable: true });
-          expect(q.shouldAssert).to.eq(true);
-        }));
-
     it('should create a queue on RabbitMQ server', async () => {
       const ch = await PRMQ.confirmChannel();
       const q = ch.queue('prmqTestQueue');

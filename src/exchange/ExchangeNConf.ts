@@ -53,7 +53,6 @@ export class ExchangeNConf extends ExchangeBase {
         publishRes = await this.channel.publish(this.exchangeName, s.routingKey, Buffer.from(msg));
       }
       if (this.logResults === true) {
-        console.log(publishRes)
         this.results.publish.push({
           ex: this.exchangeName,
           routingKey: s.routingKey,
@@ -71,18 +70,24 @@ export class ExchangeNConf extends ExchangeBase {
    * Public a message to an exchange - Channel#publish
    */
   public publish(message: any, options?: Options.Publish) {
+    if (this.then === null) {
+      this.then = this._thenOff;
+    }
     this.sends.push({ message, options });
     this.promise = this.promise.then(() => this.exec());
-    return this;
+    return this.promise;
   }
 
   /**
    * Publish a message to an exchange with a routing key - Channel#publish
    */
-  public publishWithRoutingKey(message: any, routingKey: string, options?: Options.Publish) {
+  public async publishWithRoutingKey(message: any, routingKey: string, options?: Options.Publish) {
+    if (this.then === null) {
+      this.then = this._thenOff;
+    }
     this.sends.push({ message, routingKey, options });
-    console.log("SENDING", { message, routingKey, options })
     this.promise = this.promise.then(() => this.exec());
-    return this;
+    return this.promise;
   }
+
 }

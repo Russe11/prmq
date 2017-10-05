@@ -36,7 +36,6 @@ export class QueueNConf extends QueueBase {
   public async exec() {
 
     this.sends.forEach(async (s) => {
-      console.log("SEND");
       const msg = typeof s.message === 'string' ? s.message : JSON.stringify(s.message);
       const sendRes = await this.ch.sendToQueue(this.q.queue, Buffer.from(msg), s.options);
       if (this.logResults === true) {
@@ -52,10 +51,10 @@ export class QueueNConf extends QueueBase {
     return this;
   }
 
-  public send(message: any, options?: Options.Publish) {
+  public async send(message: any, options?: Options.Publish) {
     this.sends.push({ message, options });
     this.promise = this.promise.then(() => this.exec());
-    return this;
+    return this.promise;
   }
 
 }

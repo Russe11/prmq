@@ -44,7 +44,7 @@ await ch.close();
 
 
 #### Hello World
-https://www.rabbitmq.com/tutorials/tutorial-five-javascript.html
+https://www.rabbitmq.com/tutorials/tutorial-one-javascript.html
 
 Sending
 ``` Javascript
@@ -75,11 +75,10 @@ await ch.queue('task_queue')
 ```
 
 ### Publish/Subscribe
-
 https://www.rabbitmq.com/tutorials/tutorial-three-javascript.html
 
 ``` Javascript
-const ex = await ch.exchangeFanout('logs');
+const ex = ch.exchangeFanout('logs');
 
 await ch.queue('')
   .bind(ex)
@@ -92,18 +91,22 @@ await ex.publish('Hello World');
 ```
 
 ### Routing
+https://www.rabbitmq.com/tutorials/tutorial-four-javascript.html
 
 ``` Javascript
-const ex = await ch.exchangeFanout('logs');
-
-await ch.queue('')
-  .bind(ex)
-  .consume((msg) => {
-    console.log(msg);
+const ex = ch.exchangeDirect('prmq_logs');
+await ch.queue('', { exclusive: true })
+  .bindWithRoutings(ex, [
+    'info',
+    'warning',
+    'error',
+  ])
+  .consumeRaw((msg) => {
+    expect(msg.fields.routingKey).to.eq('info');
+    expect(msg.content.toString()).to.eq('Hello World!');
   });
 
-await ex.publish('Hello World');
-
+await ex.publishWithRoutingKey(msg, severity);
 ```
 
 ### Topics

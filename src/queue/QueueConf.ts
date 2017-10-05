@@ -48,10 +48,10 @@ export class QueueConf extends QueueBase {
     return this;
   }
 
-  public send(message: any, options: Options.Publish, confirmationFn: Function) {
+  public async send(message: any, options: Options.Publish, confirmationFn: Function) {
     this.sends.push({ message, options, confirmationFn });
     this.promise = this.promise.then(() => this.exec());
-    return this;
+    return this.promise;
   }
 
 }

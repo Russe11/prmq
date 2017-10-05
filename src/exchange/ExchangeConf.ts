@@ -69,18 +69,24 @@ export class ExchangeConf extends ExchangeBase {
   /**
    * Public a message to an exchange - Channel#publish
    */
-  public publish(message: any, options: Options.Publish, confirmationFn: Function) {
+  public async publish(message: any, options: Options.Publish, confirmationFn: Function) {
+    if (this.then === null) {
+      this.then = this._thenOff;
+    }
     this.sends.push({ message, options, confirmationFn });
-    this.promise = this.promise.then(() => this.exec());
+    await this.promise.then(() => this.exec());
     return this;
   }
 
   /**
    * Publish a message to an exchange with a routing key - Channel#publish
    */
-  public publishWithRoutingKey(message: any, routingKey: string, options: Options.Publish, confirmationFn: Function) {
+  public async publishWithRoutingKey(message: any, routingKey: string, options: Options.Publish, confirmationFn: Function) {
+    if (this.then === null) {
+      this.then = this._thenOff;
+    }
     this.sends.push({ message, routingKey, options, confirmationFn });
-    this.promise = this.promise.then(() => this.exec());
+    await this.promise.then(() => this.exec());
     return this;
   }
 }

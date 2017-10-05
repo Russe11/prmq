@@ -27,7 +27,30 @@ import {Message, Options, Replies} from 'amqplib';
 import {ExchangeBase} from '../exchange/ExchangeBase';
 import AssertQueue = Replies.AssertQueue;
 
-export class QueueBase {
+export class QueueBase implements Promise<any> {
+
+  private _resolveSelf;
+  private _rejectSelf;
+
+  [Symbol.toStringTag];
+  public then<TResult1 = any, TResult2 = never>(
+    onfulfilled?: ((value: any) =>
+      TResult1 | PromiseLike<TResult1>) | undefined | null,
+    onrejected?: ((reason: any) =>
+      TResult2 | PromiseLike<TResult2>) | undefined | null
+  ): Promise<TResult1 | TResult2> {
+    return this.promise.then(onfulfilled, onrejected)
+  }
+
+  public catch<TResult = never>(
+    onrejected?: ((reason: any) =>
+      TResult | PromiseLike<TResult>) | undefined | null
+  ): Promise<any | TResult> {
+    return this.promise.then(onrejected)
+  }
+
+  public resolve(val:any) { this._resolveSelf(val) }
+  public reject(reason:any) { this._rejectSelf(reason) }
 
   public shouldAssert: boolean = false;
   public consumers: any[] = [];
@@ -68,7 +91,6 @@ export class QueueBase {
   public assert() {
     this.promise = this.promise
       .then(() => {
-        console.log("ASSERT", this.queueName)
         return this.ch.assertQueue(this.queueName, this.options);
       })
       .then((q) => {
@@ -80,25 +102,28 @@ export class QueueBase {
 
   public bind(exchange: ExchangeBase) {
 
-    this.promise = this.promise.then(() => {
-      return this.ch.bindQueue(this.q.queue, exchange.exchangeName);
-    })
+    this.promise = this.promise
+      .then(() => exchange)
+      .then(() => {
+        return this.ch.bindQueue(this.q.queue, exchange.exchangeName);
+      })
 
     return this;
   }
 
   public bindWithRouting(exchange: ExchangeBase, routing: string) {
-    this.promise = this.promise.then(() => {
-      return this.ch.bindQueue(this.q.queue, exchange.exchangeName, routing);
-    });
+    this.promise = this.promise
+      .then(() => exchange)
+      .then(() => {
+        return this.ch.bindQueue(this.q.queue, exchange.exchangeName, routing);
+      });
     return this;
   }
 
   public bindWithRoutings(exchange: ExchangeBase, routings: string[]) {
-    console.log("BWR")
+    this.promise = this.promise.then(() => exchange);
     routings.forEach((routing) => {
       this.promise = this.promise.then(() => {
-        console.log("BW", this.q.queue, exchange.exchangeName, routing)
         return this.ch.bindQueue(this.q.queue, exchange.exchangeName, routing);
       });
     });
@@ -125,6 +150,7 @@ export class QueueBase {
     return this;
   }
 
+
   public consumeWithAck(callbackFn: (msg: any, then: ConsumeThen) => void) {
     this.promise = this.promise.then(() => {
       return this.ch.consume(this.q.queue, (msg) => {
@@ -144,7 +170,6 @@ export class QueueBase {
     this.promise = this.promise.then(() => {
       return this.ch.consume(this.q.queue, msg => callbackFn(msg ,new ConsumeThen(this.ch, msg)), { noAck: false });
     });
-
     return this;
   }
 

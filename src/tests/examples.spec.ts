@@ -36,8 +36,7 @@ describe('Examples', () => {
   it('Worker', (done) => {
     PRMQ.channel({ logResults: true, prefetch: 1})
       .then(async (ch) =>
-        ch
-          .queue('prmq_task_queue')
+        ch.queue('prmq_task_queue')
           .consumeWithAck(async (msg, then) => {
             expect(msg).to.eq('Hello World!');
             done();
@@ -50,14 +49,13 @@ describe('Examples', () => {
   it('PubSub', (done) => {
     PRMQ.channel()
       .then(async (ch) => {
-        const ex = await ch.exchangeFanout('prmq_logs');
+        const ex = ch.exchangeFanout('prmq_logs');
         await ch.queue('')
           .bind(ex)
           .consume((msg) => {
             expect(msg).to.eq('Hello World');
             done();
           });
-
         await ex.publish('Hello World');
       });
   });
@@ -67,26 +65,19 @@ describe('Examples', () => {
     const severity = 'info';
     PRMQ.channel()
       .then(async (ch) => {
-        console.log(1);
 
-        const ex = await ch.exchangeDirect('prmq_logs');
-
-        console.log(2)
-
-        const res = await ch.queue('', { exclusive: true })
+        const ex = ch.exchangeDirect('prmq_logs');
+        await ch.queue('', { exclusive: true })
           .bindWithRoutings(ex, [
             'info',
             'warning',
             'error',
           ])
           .consumeRaw((msg) => {
-            console.log("CONSUME");
             expect(msg.fields.routingKey).to.eq('info');
             expect(msg.content.toString()).to.eq('Hello World!');
             done();
           });
-
-        console.log(res, 3)
 
         await ex.publishWithRoutingKey(msg, severity);
       });
@@ -96,7 +87,7 @@ describe('Examples', () => {
     PRMQ.channel()
       .then(async (ch) => {
 
-        const ex = await ch.exchangeTopic('prmq_topic', { durable: false });
+        const ex = ch.exchangeTopic('prmq_topic', { durable: false });
         await ch.queue('', { exclusive: true })
           .bindWithRouting(ex, 'kern.*')
           .consumeRaw((msg) => {

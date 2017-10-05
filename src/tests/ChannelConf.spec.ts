@@ -11,6 +11,20 @@ const expect = chai.expect;
 
 describe('ChannelConf()', () => {
 
+  beforeEach( async() => {
+
+    const ch = await PRMQ.channel();
+    await ch.deleteExchangesAndQueues([
+      'prmqTestExchange',
+      'prmqTestFanoutExchange',
+      'prmqTestDirectExchange',
+      'prmqTestTopicExchange'
+    ], [
+      'prmqTestQueue',
+
+    ]);
+  });
+
   describe('queue()', () => {
 
     it('should setup a queue', () =>

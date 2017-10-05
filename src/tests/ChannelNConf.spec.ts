@@ -11,6 +11,20 @@ const expect = chai.expect;
 
 describe('ChannelNConf()', () => {
 
+  beforeEach( async() => {
+
+    const ch = await PRMQ.channel();
+    await ch.deleteExchangesAndQueues([
+      'prmqTestExchange',
+      'prmqTestFanoutExchange',
+      'prmqTestDirectExchange',
+      'prmqTestTopicExchange'
+    ], [
+      'prmqTestQueue',
+
+    ]);
+  });
+
   describe('queue()', () => {
 
     it('should setup a queue', () =>
@@ -19,13 +33,6 @@ describe('ChannelNConf()', () => {
         .then((q) => {
           expect(q.queueName).to.eq('prmqTestQueue');
           expect(q.isDurable()).to.eq(true);
-        }));
-
-    it('should queue up a assertion on a queue', () =>
-      PRMQ.channel()
-        .then((ch) => {
-          const q = ch.queue('prmqTestQueue', { durable: true });
-          expect(q.shouldAssert).to.eq(true);
         }));
 
     it('should create a queue on RabbitMQ server', async () => {
@@ -40,9 +47,9 @@ describe('ChannelNConf()', () => {
   describe('exchangeFanout()', () => {
     it('should setup a exchange with type = fanout', () =>
       PRMQ.channel()
-        .then(ch => ch.exchangeFanout('prmqTestExchange'))
+        .then(ch => ch.exchangeFanout('prmqTestFanoutExchange'))
         .then((ex) => {
-          expect(ex.getName()).to.equal('prmqTestExchange');
+          expect(ex.getName()).to.equal('prmqTestFanoutExchange');
           expect(ex.isFanoutExchange()).to.eq(true);
         }));
   });
@@ -50,9 +57,9 @@ describe('ChannelNConf()', () => {
   describe('exchangeDirect()', () => {
     it('should setup a exchange with type = direct', () =>
       PRMQ.channel()
-        .then(ch => ch.exchangeDirect('prmqTestExchange'))
+        .then(ch => ch.exchangeDirect('prmqTestDirectExchange'))
         .then((ex) => {
-          expect(ex.getName()).to.equal('prmqTestExchange');
+          expect(ex.getName()).to.equal('prmqTestDirectExchange');
           expect(ex.isDirectExchange()).to.eq(true);
         }));
   });
@@ -60,9 +67,9 @@ describe('ChannelNConf()', () => {
   describe('exchangeTopic()', () => {
     it('should setup a exchange with type = topic', () =>
       PRMQ.channel()
-        .then(ch => ch.exchangeTopic('prmqTestExchange'))
+        .then(ch => ch.exchangeTopic('prmqTestTopicExchange'))
         .then((ex) => {
-          expect(ex.getName()).to.equal('prmqTestExchange');
+          expect(ex.getName()).to.equal('prmqTestTopicExchange');
           expect(ex.isTopicExchange()).to.eq(true);
         }));
   });

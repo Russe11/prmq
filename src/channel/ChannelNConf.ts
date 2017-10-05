@@ -38,9 +38,17 @@ export class ChannelNConf extends ChannelBase {
     const promise = Promise.resolve();
     const q = new QueueNConf(promise, this.ch, queueName, options);
     q.logResults = this.logResults;
+
     return q;
   }
 
+  public queueWithoutAssert(queueName: string, options?: Options.AssertQueue) {
+    const promise = Promise.resolve();
+    const q = new QueueNConf(promise, this.ch, queueName, options, false);
+    q.logResults = this.logResults;
+
+    return q;
+  }
 
   public exchange(exchangeName: string, exchangeType: ExchangeTypes, options?: Options.AssertExchange) {
     const promise = Promise.resolve();

@@ -31,6 +31,7 @@ export class QueueBase implements Promise<any> {
 
   private _resolveSelf;
   private _rejectSelf;
+  public _thenOff;
 
   [Symbol.toStringTag];
   public then<TResult1 = any, TResult2 = never>(
@@ -39,7 +40,11 @@ export class QueueBase implements Promise<any> {
     onrejected?: ((reason: any) =>
       TResult2 | PromiseLike<TResult2>) | undefined | null
   ): Promise<TResult1 | TResult2> {
-    return this.promise.then(onfulfilled, onrejected)
+    return this.promise.then(()=> {
+      this._thenOff = this.then;
+      this.then = null;
+      return this;
+    }).then(onfulfilled, onrejected);
   }
 
   public catch<TResult = never>(
@@ -57,8 +62,10 @@ export class QueueBase implements Promise<any> {
   public binds: any[] = [];
   public q: AssertQueue;
 
-  constructor(public promise: Promise<any>, public ch: any, public queueName: string, public options?: Options.AssertQueue) {
-    this.assert();
+  constructor(public promise: Promise<any>, public ch: any, public queueName: string, public options: Options.AssertQueue = {}, assert = true) {
+    if (assert){
+      this.assert();
+    }
   }
 
   public results: any = {
@@ -95,6 +102,7 @@ export class QueueBase implements Promise<any> {
       })
       .then((q) => {
         this.q = q;
+        this.queueName = q.queue;
       });
 
     return this;
@@ -121,7 +129,7 @@ export class QueueBase implements Promise<any> {
   }
 
   public bindWithRoutings(exchange: ExchangeBase, routings: string[]) {
-    this.promise = this.promise.then(() => exchange);
+    this.promise = this.promise.then(() => exchange)
     routings.forEach((routing) => {
       this.promise = this.promise.then(() => {
         return this.ch.bindQueue(this.q.queue, exchange.exchangeName, routing);

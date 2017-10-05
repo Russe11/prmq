@@ -65,11 +65,11 @@ ch.queue('hello')
 https://www.rabbitmq.com/tutorials/tutorial-two-javascript.html
 
 ``` Javascript
-const ch = await prmq.channel(1);
+const ch = await prmq.channel({prefetch: 1});
 await ch.queue('task_queue')
   .consumeWithAck((msg, then) => {
     console.log(msg);
-    then.ack();
+    return then.ack();
   })
   .send('Hello World!', { persistant: true });
 ```
@@ -78,14 +78,13 @@ await ch.queue('task_queue')
 https://www.rabbitmq.com/tutorials/tutorial-three-javascript.html
 
 ``` Javascript
+const ch = await prmq.channel();
 const ex = ch.exchangeFanout('logs');
-
 await ch.queue('')
   .bind(ex)
   .consume((msg) => {
     console.log(msg);
   });
-
 await ex.publish('Hello World');
 
 ```
@@ -94,6 +93,7 @@ await ex.publish('Hello World');
 https://www.rabbitmq.com/tutorials/tutorial-four-javascript.html
 
 ``` Javascript
+const ch = await prmq.channel();
 const ex = ch.exchangeDirect('prmq_logs');
 await ch.queue('', { exclusive: true })
   .bindWithRoutings(ex, [
@@ -102,8 +102,7 @@ await ch.queue('', { exclusive: true })
     'error',
   ])
   .consumeRaw((msg) => {
-    expect(msg.fields.routingKey).to.eq('info');
-    expect(msg.content.toString()).to.eq('Hello World!');
+    console.log(msg.fields.routingKey, msg.content.toString());
   });
 
 await ex.publishWithRoutingKey(msg, severity);
@@ -113,16 +112,43 @@ await ex.publishWithRoutingKey(msg, severity);
 https://www.rabbitmq.com/tutorials/tutorial-five-javascript.html
 
 ``` Javascript
-const ex = await ch.exchangeTopic('topic', {durable: false});
-
+const ch = await prmq.channel({prefetch: 1});
+const ex = ch.exchangeTopic('topic', {durable: false});
 await ch.queue('', { exclusive: true })
   .bindWithRouting(ex, 'kern.*')
   .consumeRaw(msg => {
     console.log(" [x] %s:'%s'", msg.fields.routingKey, msg.content.toString());
   });
-
 await ex.publishWithRoutingKey('A critical kernel error', 'kern.critical');
 
+```
+
+### RPC
+
+``` Javascript
+PRMQ.channel({ prefetch: 1 })
+  .then(async (ch) => {
+
+    const q1 = await ch.queue('prmq_rpc_queue', { durable: false })
+      .consumeRawWithAck(async (msg, then) => {
+        console.log(msg.content.toString());
+        then.ack();
+        await ch.queueWithoutAssert(msg.properties.replyTo)
+          .send('2nd message', {correlationId: msg.properties.correlationId});
+      });
+
+    const corr = Math.random().toString();
+
+    const q2 = await ch.queue('', {exclusive: true})
+      .consumeRaw((msg) => {
+        if (msg.properties.correlationId == corr) {
+           console.log(msg.content.toString());
+          return ch.close();
+        }
+      });
+
+    await q1.send('1st message', {correlationId: corr, replyTo: q2.queueName})
+  })
 ```
 
 ## Todo

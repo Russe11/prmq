@@ -29,15 +29,15 @@ export class QueueNConf extends QueueBase {
 
   private sends: { message: any, options?: Options.Publish}[] = [];
 
-  constructor(promise, ch: Channel, queueName: string, options?: Options.AssertQueue) {
-    super(promise, ch, queueName, options);
+  constructor(promise, ch: Channel, queueName: string, options?: Options.AssertQueue, assert: boolean = true) {
+    super(promise, ch, queueName, options, assert);
   }
 
   public async exec() {
 
     this.sends.forEach(async (s) => {
       const msg = typeof s.message === 'string' ? s.message : JSON.stringify(s.message);
-      const sendRes = await this.ch.sendToQueue(this.q.queue, Buffer.from(msg), s.options);
+      const sendRes = await this.ch.sendToQueue(this.queueName, Buffer.from(msg), s.options);
       if (this.logResults === true) {
         this.results.send.push({
           q: this.q.queue,
@@ -52,6 +52,9 @@ export class QueueNConf extends QueueBase {
   }
 
   public async send(message: any, options?: Options.Publish) {
+    if (this.then === null) {
+      this.then = this._thenOff;
+    }
     this.sends.push({ message, options });
     this.promise = this.promise.then(() => this.exec());
     return this.promise;

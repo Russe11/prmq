@@ -99,5 +99,31 @@ describe('Examples', () => {
         return await ex.publishWithRoutingKey('A critical kernel error', 'kern.critical');
       });
   });
+
+  it('RPC', (done) => {
+    PRMQ.channel({ prefetch: 1 })
+      .then(async (ch) => {
+
+        const q1 = await ch.queue('prmq_rpc_queue', { durable: false })
+          .consumeRawWithAck(async (msg, then) => {
+            then.ack();
+            expect(msg.content.toString()).to.eq('1st message');
+            await ch.queueWithoutAssert(msg.properties.replyTo)
+              .send('2nd message', {correlationId: msg.properties.correlationId})
+          });
+
+        const corr = Math.random().toString();
+
+        const q2 = await ch.queue('', {exclusive: true})
+          .consumeRaw((msg) => {
+            if (msg.properties.correlationId == corr) {
+              done();
+              return ch.close();
+            }
+          });
+
+        await q1.send('1st message', {correlationId: corr, replyTo: q2.queueName})
+      })
+  })
 });
 

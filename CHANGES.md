@@ -1,4 +1,30 @@
-2017-10-06, Version 0.6.0
+2017-10-06, Version 0.6.1
+=========================
+
+ * Closed connections in tests so Mocha 4.0 didn't hand when running (Russell Lewis)
+
+ * Updated packages (Russell Lewis)
+
+ * Fixed linting err (Russell Lewis)
+
+ * Delete .DS_Store (Russell Lewis)
+
+ * Removed .DS_Store (Russell Lewis)
+
+ * Fixed readme (Russell Lewis)
+
+ * Fixed tests (Russell Lewis)
+
+ * Updated readme (Russell Lewis)
+
+ * Added RPC example (Russell Lewis)
+
+ * Exchanges and Queues now also act like promises (Russell Lewis)
+
+ * Improved promise flow (Russell Lewis)
+
+
+2017-10-05, Version 0.6.0
 =========================
 
  * Update README.md (Russell Lewis)

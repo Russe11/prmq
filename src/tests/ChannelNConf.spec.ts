@@ -21,19 +21,12 @@ describe('ChannelNConf()', () => {
       'prmqTestTopicExchange'
     ], [
       'prmqTestQueue',
-
+      'prmqCheckQueue'
     ]);
+    await ch.close()
   });
 
   describe('queue()', () => {
-
-    it('should setup a queue', () =>
-      PRMQ.channel()
-        .then(ch => ch.queue('prmqTestQueue', { durable: true }))
-        .then((q) => {
-          expect(q.queueName).to.eq('prmqTestQueue');
-          expect(q.isDurable()).to.eq(true);
-        }));
 
     it('should create a queue on RabbitMQ server', async () => {
       const ch = await PRMQ.channel();
@@ -41,6 +34,7 @@ describe('ChannelNConf()', () => {
       await q.exec();
       await q.check();
       await ch.deleteQueue('prmqTestQueue');
+      await ch.close();
     });
   });
 
@@ -48,9 +42,10 @@ describe('ChannelNConf()', () => {
     it('should setup a exchange with type = fanout', () =>
       PRMQ.channel()
         .then(ch => ch.exchangeFanout('prmqTestFanoutExchange'))
-        .then((ex) => {
+        .then(async (ex) => {
           expect(ex.getName()).to.equal('prmqTestFanoutExchange');
           expect(ex.isFanoutExchange()).to.eq(true);
+          await ex.channel.connection.close();
         }));
   });
 
@@ -58,9 +53,10 @@ describe('ChannelNConf()', () => {
     it('should setup a exchange with type = direct', () =>
       PRMQ.channel()
         .then(ch => ch.exchangeDirect('prmqTestDirectExchange'))
-        .then((ex) => {
+        .then(async (ex) => {
           expect(ex.getName()).to.equal('prmqTestDirectExchange');
           expect(ex.isDirectExchange()).to.eq(true);
+          await ex.channel.connection.close();
         }));
   });
 
@@ -68,9 +64,10 @@ describe('ChannelNConf()', () => {
     it('should setup a exchange with type = topic', () =>
       PRMQ.channel()
         .then(ch => ch.exchangeTopic('prmqTestTopicExchange'))
-        .then((ex) => {
+        .then(async (ex) => {
           expect(ex.getName()).to.equal('prmqTestTopicExchange');
           expect(ex.isTopicExchange()).to.eq(true);
+          await ex.channel.connection.close();
         }));
   });
 
@@ -84,18 +81,12 @@ describe('ChannelNConf()', () => {
 
   describe('checkQueue()', () => {
 
-    beforeEach(async () => {
-      const ch = await PRMQ.channel();
-      return ch.deleteQueues([
-        'prmqCheckQueue'
-      ]);
-    });
-
     it('should confirm a queue exists by Queue object', async () => {
       const ch = await PRMQ.channel();
       const q = await ch.queue('prmqCheckQueue');
       await q.exec();
       await ch.checkQueue(q);
+      await ch.close();
     });
 
     it('should confirm a queue exists by queue name', async () => {
@@ -103,6 +94,7 @@ describe('ChannelNConf()', () => {
       const q = await ch.queue('prmqCheckQueue');
       await q.exec();
       await ch.checkQueue('prmqCheckQueue');
+      await ch.close();
     });
 
     it('should throw an error when a Queue object does not exist', async () => {
@@ -110,6 +102,7 @@ describe('ChannelNConf()', () => {
       const q = await ch.queue('prmqCheckQueue');
       await q.exec();
       expect(ch.checkQueue('prmqQueueNotExist')).to.be.rejected;
+      await ch.close();
     });
   });
 });

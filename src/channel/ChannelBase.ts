@@ -68,7 +68,6 @@ export class ChannelBase {
    * Close the channel
    */
   public async close() {
-    await this.ch.close();
     await this.conn.close();
     this.closed = true;
     return this;

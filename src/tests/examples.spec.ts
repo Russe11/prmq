@@ -19,6 +19,7 @@ describe('Examples', () => {
       'prmq_hello',
       'prmq_rpc_queue'
     ]);
+    await ch.close()
   });
 
   it('HelloWorld', (done) => {
@@ -28,7 +29,7 @@ describe('Examples', () => {
           .consume(async (msg) => {
             expect(msg).eq('Hello World!');
             await ch.close();
-            done();
+            return done();
           })
           .send('Hello World!')
       );
@@ -40,8 +41,9 @@ describe('Examples', () => {
         ch.queue('prmq_task_queue')
           .consumeWithAck(async (msg, then) => {
             expect(msg).to.eq('Hello World!');
+            then.ack();
+            await ch.close();
             done();
-            return then.ack();
           })
           .send('Hello World!', { persistent: true })
         );
@@ -53,8 +55,9 @@ describe('Examples', () => {
         const ex = ch.exchangeFanout('prmq_logs');
         await ch.queue()
           .bind(ex)
-          .consume((msg) => {
+          .consume(async(msg) => {
             expect(msg).to.eq('Hello World');
+            await ch.close();
             done();
           });
         await ex.publish('Hello World');
@@ -74,9 +77,10 @@ describe('Examples', () => {
             'warning',
             'error',
           ])
-          .consumeRaw((msg) => {
+          .consumeRaw(async (msg) => {
             expect(msg.fields.routingKey).to.eq('info');
             expect(msg.content.toString()).to.eq('Hello World!');
+            await ch.close();
             done();
           });
 
@@ -91,9 +95,11 @@ describe('Examples', () => {
         const ex = ch.exchangeTopic('prmq_topic', { durable: false });
         await ch.queue('', { exclusive: true })
           .bindWithRouting(ex, 'kern.*')
-          .consumeRaw((msg) => {
+          .consumeRaw(async(msg) => {
+
             expect(msg.fields.routingKey).to.equal('kern.critical');
             expect(msg.content.toString().toString()).to.equal('A critical kernel error');
+            await ch.close();
             done();
           });
 
@@ -116,10 +122,11 @@ describe('Examples', () => {
         const corr = Math.random().toString();
 
         const q2 = await ch.queue('', {exclusive: true})
-          .consumeRaw((msg) => {
+          .consumeRaw(async (msg) => {
             if (msg.properties.correlationId == corr) {
+
+              await ch.close();
               done();
-              return ch.close();
             }
           });
 

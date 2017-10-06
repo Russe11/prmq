@@ -31,7 +31,6 @@ export class ChannelBase {
   public closed: boolean = false;
   public ch: any;
   public conn: Connection;
-  public shouldAssert: boolean;
 
   constructor(channel: any, conn: Connection) {
     this.ch = channel;
@@ -69,7 +68,6 @@ export class ChannelBase {
    * Close the channel
    */
   public async close() {
-    await this.ch.close();
     await this.conn.close();
     this.closed = true;
     return this;
@@ -81,8 +79,6 @@ export class ChannelBase {
 
   /**
    * Remove exchange and queues from RabbitMQ
-   * @param {string[]} exchanges
-   * @param {string[]?} queues
    */
   public async deleteExchangesAndQueues(exchanges: string[], queues: string[] = [])  {
     await P.map(queues, queue => this.ch.deleteQueue(queue))

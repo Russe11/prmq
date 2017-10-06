@@ -22,6 +22,8 @@
  * PRMQ Library
  */
 
+Promise = require('bluebird');
+
 import {connect, Connection} from 'amqplib';
 
 import {ChannelConf} from './channel/ChannelConf';

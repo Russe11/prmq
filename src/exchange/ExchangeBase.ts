@@ -31,16 +31,46 @@ export enum ExchangeTypes {
   Topic = 'topic'
 }
 
-export class ExchangeBase {
+export class ExchangeBase implements Promise<any> {
 
   public shouldAssert: boolean = false;
 
   constructor(
+    public promise: Promise<any>,
     public channel: any,
     public exchangeName: string,
     public exchangeType: ExchangeTypes,
     public options?: Options.AssertExchange) {
+      this.execAssert();
   }
+
+  private _resolveSelf;
+  private _rejectSelf;
+  public _thenOff;
+
+  [Symbol.toStringTag];
+  public then<TResult1 = any, TResult2 = never>(
+    onfulfilled?: ((value: any) =>
+      TResult1 | PromiseLike<TResult1>) | undefined | null,
+    onrejected?: ((reason: any) =>
+      TResult2 | PromiseLike<TResult2>) | undefined | null
+  ): Promise<TResult1 | TResult2> {
+    return this.promise.then(()=> {
+      this._thenOff = this.then;
+      this.then = null;
+      return this;
+    }).then(onfulfilled, onrejected);
+  }
+
+  public catch<TResult = never>(
+    onrejected?: ((reason: any) =>
+      TResult | PromiseLike<TResult>) | undefined | null
+  ): Promise<any | TResult> {
+    return this.promise.then(onrejected)
+  }
+
+  public resolve(val:any) { this._resolveSelf(val) }
+  public reject(reason:any) { this._rejectSelf(reason) }
 
   public results: any = {
     publish: []
@@ -48,23 +78,16 @@ export class ExchangeBase {
 
   public logResults: boolean;
 
-  public async execAssert() {
-    if (this.shouldAssert) {
-      await this.channel.assertExchange(this.exchangeName, this.exchangeType, this.options);
-      this.shouldAssert = false;
+  public  execAssert() {
+    if (this.then === null) {
+      this.then = this._thenOff;
     }
+    this.promise = this.promise.then(() => this.channel.assertExchange(this.exchangeName, this.exchangeType, this.options)) ;
+    return this;
   }
 
   public get ExchangeName() {
     return this.exchangeName;
-  }
-
-  /**
-   * Assert an exchange - Channel#assertExchange
-   */
-  public assert() {
-    this.shouldAssert = true;
-    return this;
   }
 
   /**

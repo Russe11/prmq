@@ -14,27 +14,14 @@
 **This project is still under heavy development and the API will likely change.
 Compatible with Node.js v6 or higher**
 
-## Usage
+#### Changelog 
 
+##### v0.6.0:
 
-
-All promise chains are queued until ```.exec``` is called at the end.
-
-So this will not have any affect:
-
-``` javascript
-ch.queue('hello')
-  .consume((msg) => { });
-```
-
-until you add ```.exec()```
-
-``` javascript
-ch.queue('hello')
-  .consume((msg) => { })
-  .exec();
-```
-
+  * Exchanges and Queues are now resolvable using the promise pattern
+  * exec() is no longer required. Just resolve the chain.
+  * RPC is supported
+ 
 
 
 #### Initialization
@@ -62,7 +49,7 @@ await ch.close();
 
 
 #### Hello World
-https://www.rabbitmq.com/tutorials/tutorial-five-javascript.html
+https://www.rabbitmq.com/tutorials/tutorial-one-javascript.html
 
 Sending
 ``` Javascript
@@ -70,14 +57,12 @@ ch.queue('hello')
   .consume((msg) => {
     console.log("msg");
   })
-  .exec();
 ```
 
 Receiving
 ```
 ch.queue('hello')
-  .send('Hello World!')
-  .exec();
+  .send('Hello World!');
 ```
 
 ### Worker
@@ -85,69 +70,91 @@ ch.queue('hello')
 https://www.rabbitmq.com/tutorials/tutorial-two-javascript.html
 
 ``` Javascript
-const ch = await prmq.channel(1);
+const ch = await prmq.channel({prefetch: 1});
 await ch.queue('task_queue')
   .consumeWithAck((msg, then) => {
     console.log(msg);
-    then.ack();
+    return then.ack();
   })
-  .send('Hello World!', { persistant: true })
-  .exec();
+  .send('Hello World!', { persistant: true });
 ```
 
 ### Publish/Subscribe
-
 https://www.rabbitmq.com/tutorials/tutorial-three-javascript.html
 
 ``` Javascript
-const ex = await ch.exchangeFanout('logs').go();
-
-await ch.queue('')
+const ch = await prmq.channel();
+const ex = ch.exchangeFanout('logs');
+await ch.queue()
   .bind(ex)
   .consume((msg) => {
     console.log(msg);
-  })
-  .exec()
-
-await ex.publish('Hello World')
-  .exec();
+  });
+await ex.publish('Hello World');
 
 ```
 
 ### Routing
+https://www.rabbitmq.com/tutorials/tutorial-four-javascript.html
 
 ``` Javascript
-const ex = await ch.exchangeFanout('logs').go();
+const ch = await prmq.channel();
+const ex = ch.exchangeDirect('prmq_logs');
+await ch.queue('', { exclusive: true })
+  .bindWithRoutings(ex, [
+    'info',
+    'warning',
+    'error',
+  ])
+  .consumeRaw((msg) => {
+    console.log(msg.fields.routingKey, msg.content.toString());
+  });
 
-await ch.queue('')
-  .bind(ex)
-  .consume((msg) => {
-    console.log(msg);
-  })
-  .exec();
-
-await ex.publish('Hello World')
-  .exec();
-
+await ex.publishWithRoutingKey(msg, severity);
 ```
 
 ### Topics
 https://www.rabbitmq.com/tutorials/tutorial-five-javascript.html
 
 ``` Javascript
-const ex = await ch.exchangeTopic('topic', {durable: false})
-  .exec();
-
+const ch = await prmq.channel({prefetch: 1});
+const ex = ch.exchangeTopic('topic', {durable: false});
 await ch.queue('', { exclusive: true })
   .bindWithRouting(ex, 'kern.*')
   .consumeRaw(msg => {
     console.log(" [x] %s:'%s'", msg.fields.routingKey, msg.content.toString());
+  });
+await ex.publishWithRoutingKey('A critical kernel error', 'kern.critical');
+
+```
+
+### RPC
+https://www.rabbitmq.com/tutorials/tutorial-six-javascript.html
+
+``` Javascript
+PRMQ.channel({ prefetch: 1 })
+  .then(async (ch) => {
+
+    const q1 = await ch.queue('prmq_rpc_queue', { durable: false })
+      .consumeRawWithAck(async (msg, then) => {
+        console.log(msg.content.toString());
+        then.ack();
+        await ch.queueWithoutAssert(msg.properties.replyTo)
+          .send('2nd message', {correlationId: msg.properties.correlationId});
+      });
+
+    const corr = Math.random().toString();
+
+    const q2 = await ch.queue('', {exclusive: true})
+      .consumeRaw((msg) => {
+        if (msg.properties.correlationId == corr) {
+           console.log(msg.content.toString());
+          return ch.close();
+        }
+      });
+
+    await q1.send('1st message', {correlationId: corr, replyTo: q2.queueName})
   })
-  .exec();
-
-await ex.publishWithRoutingKey('A critical kernel error', 'kern.critical')
-  .exec();
-
 ```
 
 ## Todo

@@ -30,20 +30,18 @@ export class ExchangeNConf extends ExchangeBase {
   private sends: any = [];
 
   constructor(
+    promise: Promise<any>,
     channel: Channel,
     exchangeName: string,
     exchangeType: ExchangeTypes,
     options?: Options.AssertExchange) {
-    super(channel, exchangeName, exchangeType, options);
+    super(promise, channel, exchangeName, exchangeType, options);
   }
 
   /**
    * Execute all actions currently pending on the exchange
-   * @returns {Promise.<this>}
    */
   public async exec() {
-
-    await this.execAssert();
 
     this.sends.forEach(async (s) => {
       const msg = typeof s.message === 'string' ? s.message : JSON.stringify(s.message);
@@ -71,15 +69,24 @@ export class ExchangeNConf extends ExchangeBase {
    * Public a message to an exchange - Channel#publish
    */
   public publish(message: any, options?: Options.Publish) {
+    if (this.then === null) {
+      this.then = this._thenOff;
+    }
     this.sends.push({ message, options });
-    return this;
+    this.promise = this.promise.then(() => this.exec());
+    return this.promise;
   }
 
   /**
    * Publish a message to an exchange with a routing key - Channel#publish
    */
-  public publishWithRoutingKey(message: any, routingKey: string, options?: Options.Publish) {
+  public async publishWithRoutingKey(message: any, routingKey: string, options?: Options.Publish) {
+    if (this.then === null) {
+      this.then = this._thenOff;
+    }
     this.sends.push({ message, routingKey, options });
-    return this;
+    this.promise = this.promise.then(() => this.exec());
+    return this.promise;
   }
+
 }

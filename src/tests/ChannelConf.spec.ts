@@ -11,22 +11,23 @@ const expect = chai.expect;
 
 describe('ChannelConf()', () => {
 
+  beforeEach( async() => {
+
+    const ch = await PRMQ.channel();
+    await ch.deleteExchangesAndQueues([
+      'prmqTestExchange',
+      'prmqTestFanoutExchange',
+      'prmqTestDirectExchange',
+      'prmqTestTopicExchange',
+    ], [
+      'prmqTestQueue',
+      'prmqCheckQueue'
+
+    ]);
+    await ch.close()
+  });
+
   describe('queue()', () => {
-
-    it('should setup a queue', () =>
-      PRMQ.confirmChannel()
-        .then(ch => ch.queue('prmqTestQueue', { durable: true }))
-        .then((q) => {
-          expect(q.queueName).to.eq('prmqTestQueue');
-          expect(q.isDurable()).to.eq(true);
-        }));
-
-    it('should queue up a assertion on a queue', () =>
-      PRMQ.confirmChannel()
-        .then((ch) => {
-          const q = ch.queue('prmqTestQueue', { durable: true });
-          expect(q.shouldAssert).to.eq(true);
-        }));
 
     it('should create a queue on RabbitMQ server', async () => {
       const ch = await PRMQ.confirmChannel();
@@ -34,6 +35,7 @@ describe('ChannelConf()', () => {
       await q.exec();
       await q.check();
       await ch.deleteQueue('prmqTestQueue');
+      await ch.close();
     });
   });
 
@@ -41,9 +43,10 @@ describe('ChannelConf()', () => {
     it('should setup a exchange with type = fanout', () =>
       PRMQ.confirmChannel()
         .then(ch => ch.exchangeFanout('prmqTestExchange'))
-        .then((ex) => {
+        .then(async(ex) => {
           expect(ex.getName()).to.equal('prmqTestExchange');
           expect(ex.isFanoutExchange()).to.eq(true);
+          await ex.channel.connection.close();
         }));
   });
 
@@ -54,6 +57,7 @@ describe('ChannelConf()', () => {
         .then((ex) => {
           expect(ex.getName()).to.equal('prmqTestExchange');
           expect(ex.isDirectExchange()).to.eq(true);
+          return ex.channel.connection.close();
         }));
   });
 
@@ -64,6 +68,7 @@ describe('ChannelConf()', () => {
         .then((ex) => {
           expect(ex.getName()).to.equal('prmqTestExchange');
           expect(ex.isTopicExchange()).to.eq(true);
+          return ex.channel.connection.close();
         }));
   });
 
@@ -77,18 +82,12 @@ describe('ChannelConf()', () => {
 
   describe('checkQueue()', () => {
 
-    beforeEach(async () => {
-      const ch = await PRMQ.confirmChannel();
-      return ch.deleteQueues([
-        'prmqCheckQueue'
-      ]);
-    });
-
     it('should confirm a queue exists by Queue object', async () => {
       const ch = await PRMQ.confirmChannel();
       const q = await ch.queue('prmqCheckQueue');
       await q.exec();
       await ch.checkQueue(q);
+      await ch.close();
     });
 
     it('should confirm a queue exists by queue name', async () => {
@@ -96,6 +95,7 @@ describe('ChannelConf()', () => {
       const q = await ch.queue('prmqCheckQueue');
       await q.exec();
       await ch.checkQueue('prmqCheckQueue');
+      await ch.close();
     });
 
     it('should throw an error when a Queue object does not exist', async () => {
@@ -103,6 +103,7 @@ describe('ChannelConf()', () => {
       const q = await ch.queue('prmqCheckQueue');
       await q.exec();
       expect(ch.checkQueue('prmqQueueNotExist')).to.be.rejected;
+      await ch.close();
     });
   });
 });

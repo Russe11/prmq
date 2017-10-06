@@ -34,17 +34,27 @@ export class ChannelNConf extends ChannelBase {
     super(channel, conn);
   }
 
-  public queue(queueName: string, options?: Options.AssertQueue) {
-    const q = new QueueNConf(this.ch, queueName, options);
+  public queue(queueName: string = '', options?: Options.AssertQueue) {
+    const promise = Promise.resolve();
+    const q = new QueueNConf(promise, this.ch, queueName, options);
     q.logResults = this.logResults;
-    return q.assert();
+
+    return q;
   }
 
+  public queueWithoutAssert(queueName: string, options?: Options.AssertQueue) {
+    const promise = Promise.resolve();
+    const q = new QueueNConf(promise, this.ch, queueName, options, false);
+    q.logResults = this.logResults;
+
+    return q;
+  }
 
   public exchange(exchangeName: string, exchangeType: ExchangeTypes, options?: Options.AssertExchange) {
-    const ex = new ExchangeNConf(this.ch, exchangeName, exchangeType, options);
+    const promise = Promise.resolve();
+    const ex = new ExchangeNConf(promise, this.ch, exchangeName, exchangeType, options);
     ex.logResults = this.logResults;
-    return ex.assert();
+    return ex;
   }
 
   /**

@@ -30,11 +30,12 @@ export class ExchangeConf extends ExchangeBase {
   private sends: any[];
 
   constructor(
+    promise: Promise<any>,
     channel: ConfirmChannel,
     exchangeName: string,
     exchangeType: ExchangeTypes,
     options?: Options.AssertExchange) {
-    super(channel, exchangeName, exchangeType, options);
+    super(promise, channel, exchangeName, exchangeType, options);
   }
 
   /**
@@ -43,7 +44,7 @@ export class ExchangeConf extends ExchangeBase {
    */
   public async exec() {
 
-    await this.execAssert();
+
 
     this.sends.forEach(async (s) => {
       const msg = typeof s.message === 'string' ? s.message : JSON.stringify(s.message);
@@ -68,16 +69,24 @@ export class ExchangeConf extends ExchangeBase {
   /**
    * Public a message to an exchange - Channel#publish
    */
-  public publish(message: any, options: Options.Publish, confirmationFn: Function) {
+  public async publish(message: any, options: Options.Publish, confirmationFn: Function) {
+    if (this.then === null) {
+      this.then = this._thenOff;
+    }
     this.sends.push({ message, options, confirmationFn });
+    await this.promise.then(() => this.exec());
     return this;
   }
 
   /**
    * Publish a message to an exchange with a routing key - Channel#publish
    */
-  public publishWithRoutingKey(message: any, routingKey: string, options: Options.Publish, confirmationFn: Function) {
+  public async publishWithRoutingKey(message: any, routingKey: string, options: Options.Publish, confirmationFn: Function) {
+    if (this.then === null) {
+      this.then = this._thenOff;
+    }
     this.sends.push({ message, routingKey, options, confirmationFn });
+    await this.promise.then(() => this.exec());
     return this;
   }
 }

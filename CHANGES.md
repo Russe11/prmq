@@ -1,3 +1,15 @@
+2017-10-06, Version 0.6.0
+=========================
+
+ * Update README.md (Russell Lewis)
+
+ * Create LICENSE (Russell Lewis)
+
+ * docs(readme): add Greenkeeper badge (greenkeeper[bot])
+
+ * chore(package): update dependencies (greenkeeper[bot])
+
+
 2017-10-04, Version 0.5.1
 =========================
 
@@ -108,12 +120,6 @@
 
 
 2017-09-19, Version 0.4.2
-=========================
-
- * Removed /dist (Russell Lewis)
-
-
-2017-09-19, Version 0.4.1
 =========================
 
  * Removed /dist (Russell Lewis)

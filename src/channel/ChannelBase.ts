@@ -51,7 +51,7 @@ export class ChannelBase {
 
   public deleteQueue(queueName: string, options?: Options.DeleteQueue): P<Replies.DeleteQueue> {
     if (this.closed) {
-      ChannelBase.throwClosedChannel();
+      this.throwClosedChannel();
     }
     return this.ch.deleteQueue(queueName, options);
   }
@@ -85,12 +85,10 @@ export class ChannelBase {
       .then(() => P.map(exchanges, exchange => this.ch.deleteExchange(exchange)));
   }
 
-
-
   /**
    * @private
    */
-  public static throwClosedChannel() {
+  public throwClosedChannel() {
     throw new Error('Channel Closed');
   }
 }

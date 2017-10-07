@@ -35,8 +35,6 @@ export class ChannelConf extends ChannelBase {
     super(channel, conn);
   }
 
-
-
   public queue(queueName: string = '', options?: Options.AssertQueue) {
     const promise = Promise.resolve();
     const q = new QueueConf(promise, this.ch, queueName, options);
@@ -58,7 +56,7 @@ export class ChannelConf extends ChannelBase {
 
   public deleteQueue(queueName: string, options?: Options.DeleteQueue): Bluebird<Replies.DeleteQueue> {
     if (this.closed) {
-      ChannelBase.throwClosedChannel();
+      this.throwClosedChannel();
     }
     return this.ch.deleteQueue(queueName, options);
   }
@@ -83,7 +81,7 @@ export class ChannelConf extends ChannelBase {
    */
   public exchangeDirect(exchangeName: string, options?: Options.AssertExchange) {
     if (this.closed) {
-      ChannelBase.throwClosedChannel();
+      this.throwClosedChannel();
     }
     return this.exchange(exchangeName, ExchangeTypes.Direct, options);
   }
@@ -93,7 +91,7 @@ export class ChannelConf extends ChannelBase {
    */
   public exchangeFanout(exchangeName: string, options?: Options.AssertExchange) {
     if (this.closed) {
-      ChannelBase.throwClosedChannel();
+      this.throwClosedChannel();
     }
     return this.exchange(exchangeName, ExchangeTypes.Fanout, options);
   }
@@ -103,10 +101,8 @@ export class ChannelConf extends ChannelBase {
    */
   public exchangeTopic(exchangeName: string, options: Options.AssertExchange = {}) {
     if (this.closed) {
-      ChannelBase.throwClosedChannel();
+      this.throwClosedChannel();
     }
     return this.exchange(exchangeName, ExchangeTypes.Topic, options);
   }
-
-
 }

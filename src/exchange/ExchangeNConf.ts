@@ -70,7 +70,7 @@ export class ExchangeNConf extends ExchangeBase {
    */
   public publish(message: any, options?: Options.Publish) {
     if (this.then === null) {
-      this.then = this._thenOff;
+      this.then = this.thenOff;
     }
     this.sends.push({ message, options });
     this.promise = this.promise.then(() => this.exec());
@@ -82,7 +82,7 @@ export class ExchangeNConf extends ExchangeBase {
    */
   public async publishWithRoutingKey(message: any, routingKey: string, options?: Options.Publish) {
     if (this.then === null) {
-      this.then = this._thenOff;
+      this.then = this.thenOff;
     }
     this.sends.push({ message, routingKey, options });
     this.promise = this.promise.then(() => this.exec());

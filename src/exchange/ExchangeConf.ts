@@ -44,8 +44,6 @@ export class ExchangeConf extends ExchangeBase {
    */
   public async exec() {
 
-
-
     this.sends.forEach(async (s) => {
       const msg = typeof s.message === 'string' ? s.message : JSON.stringify(s.message);
       let publishRes;
@@ -71,7 +69,7 @@ export class ExchangeConf extends ExchangeBase {
    */
   public async publish(message: any, options: Options.Publish, confirmationFn: Function) {
     if (this.then === null) {
-      this.then = this._thenOff;
+      this.then = this.thenOff;
     }
     this.sends.push({ message, options, confirmationFn });
     await this.promise.then(() => this.exec());
@@ -83,7 +81,7 @@ export class ExchangeConf extends ExchangeBase {
    */
   public async publishWithRoutingKey(message: any, routingKey: string, options: Options.Publish, confirmationFn: Function) {
     if (this.then === null) {
-      this.then = this._thenOff;
+      this.then = this.thenOff;
     }
     this.sends.push({ message, routingKey, options, confirmationFn });
     await this.promise.then(() => this.exec());

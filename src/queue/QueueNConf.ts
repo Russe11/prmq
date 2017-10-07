@@ -29,7 +29,7 @@ export class QueueNConf extends QueueBase {
 
   private sends: { message: any, options?: Options.Publish}[] = [];
 
-  constructor(promise, ch: Channel, queueName: string, options?: Options.AssertQueue, assert: boolean = true) {
+  constructor(promise: Promise<any>, ch: Channel, queueName: string, options?: Options.AssertQueue, assert: boolean = true) {
     super(promise, ch, queueName, options, assert);
   }
 
@@ -53,7 +53,7 @@ export class QueueNConf extends QueueBase {
 
   public async send(message: any, options?: Options.Publish) {
     if (this.then === null) {
-      this.then = this._thenOff;
+      this.then = this.thenOff;
     }
     this.sends.push({ message, options });
     this.promise = this.promise.then(() => this.exec());

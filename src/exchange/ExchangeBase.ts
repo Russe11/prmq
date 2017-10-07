@@ -44,33 +44,31 @@ export class ExchangeBase implements Promise<any> {
       this.execAssert();
   }
 
-  private _resolveSelf;
-  private _rejectSelf;
-  public _thenOff;
+  private resolveSelf: any;
+  private rejectSelf: any;
+  public thenOff: any;
 
-  [Symbol.toStringTag];
+  public [Symbol.toStringTag]: any;
   public then<TResult1 = any, TResult2 = never>(
     onfulfilled?: ((value: any) =>
       TResult1 | PromiseLike<TResult1>) | undefined | null,
     onrejected?: ((reason: any) =>
       TResult2 | PromiseLike<TResult2>) | undefined | null
   ): Promise<TResult1 | TResult2> {
-    return this.promise.then(()=> {
-      this._thenOff = this.then;
+    return this.promise.then(() => {
+      this.thenOff = this.then;
       this.then = null;
       return this;
     }).then(onfulfilled, onrejected);
   }
 
-  public catch<TResult = never>(
-    onrejected?: ((reason: any) =>
-      TResult | PromiseLike<TResult>) | undefined | null
-  ): Promise<any | TResult> {
-    return this.promise.then(onrejected)
+  // tslint:disable-next-line:no-reserved-keywords
+  public catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<any | TResult> {
+    return this.promise.then(onrejected);
   }
 
-  public resolve(val:any) { this._resolveSelf(val) }
-  public reject(reason:any) { this._rejectSelf(reason) }
+  public resolve(val: any) { this.resolveSelf(val); }
+  public reject(reason: any) { this.rejectSelf(reason); }
 
   public results: any = {
     publish: []
@@ -80,7 +78,7 @@ export class ExchangeBase implements Promise<any> {
 
   public  execAssert() {
     if (this.then === null) {
-      this.then = this._thenOff;
+      this.then = this.thenOff;
     }
     this.promise = this.promise.then(() => this.channel.assertExchange(this.exchangeName, this.exchangeType, this.options)) ;
     return this;

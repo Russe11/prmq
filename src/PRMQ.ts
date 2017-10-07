@@ -22,14 +22,12 @@
  * PRMQ Library
  */
 
-Promise = require('bluebird');
-
 import {connect, Connection} from 'amqplib';
-
 import {ChannelConf} from './channel/ChannelConf';
 import {ChannelNConf} from './channel/ChannelNConf';
+import * as Debug from 'debug';
 
-const debug = require('debug')('http');
+const debug = Debug('http');
 
 export interface PRMQChannelOptions {
   connectionString?: string;

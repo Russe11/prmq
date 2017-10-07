@@ -29,41 +29,26 @@ import AssertQueue = Replies.AssertQueue;
 
 export class QueueBase implements Promise<any> {
 
-  private _resolveSelf;
-  private _rejectSelf;
-  public _thenOff;
+  private resolveSelf: any;
+  private rejectSelf: any;
+  public thenOff: any;
 
-  [Symbol.toStringTag];
-  public then<TResult1 = any, TResult2 = never>(
-    onfulfilled?: ((value: any) =>
-      TResult1 | PromiseLike<TResult1>) | undefined | null,
-    onrejected?: ((reason: any) =>
-      TResult2 | PromiseLike<TResult2>) | undefined | null
-  ): Promise<TResult1 | TResult2> {
-    return this.promise.then(()=> {
-      this._thenOff = this.then;
-      this.then = null;
-      return this;
-    }).then(onfulfilled, onrejected);
-  }
-
-  public catch<TResult = never>(
-    onrejected?: ((reason: any) =>
-      TResult | PromiseLike<TResult>) | undefined | null
-  ): Promise<any | TResult> {
-    return this.promise.then(onrejected)
-  }
-
-  public resolve(val:any) { this._resolveSelf(val) }
-  public reject(reason:any) { this._rejectSelf(reason) }
+  public resolve(val: any) { this.resolveSelf(val); }
+  public reject(reason: any) { this.rejectSelf(reason); }
 
   public shouldAssert: boolean = false;
   public consumers: any[] = [];
   public binds: any[] = [];
   public q: AssertQueue;
 
-  constructor(public promise: Promise<any>, public ch: any, public queueName: string, public options: Options.AssertQueue = {}, assert = true) {
-    if (assert){
+  constructor(
+    public promise: Promise<any>,
+    public ch: any,
+    public queueName: string,
+    public options: Options.AssertQueue = {},
+    assert: boolean = true
+  ) {
+    if (assert) {
       this.assert();
     }
   }
@@ -114,7 +99,7 @@ export class QueueBase implements Promise<any> {
       .then(() => exchange)
       .then(() => {
         return this.ch.bindQueue(this.q.queue, exchange.exchangeName);
-      })
+      });
 
     return this;
   }
@@ -129,7 +114,7 @@ export class QueueBase implements Promise<any> {
   }
 
   public bindWithRoutings(exchange: ExchangeBase, routings: string[]) {
-    this.promise = this.promise.then(() => exchange)
+    this.promise = this.promise.then(() => exchange);
     routings.forEach((routing) => {
       this.promise = this.promise.then(() => {
         return this.ch.bindQueue(this.q.queue, exchange.exchangeName, routing);
@@ -153,11 +138,10 @@ export class QueueBase implements Promise<any> {
   public consumeRaw(callbackFn: (msg: Message) => void) {
 
     this.promise = this.promise.then(() => {
-      return this.ch.consume(this.q.queue, msg => callbackFn(msg), { noAck: true });
+      return this.ch.consume(this.q.queue, callbackFn, { noAck: true });
     });
     return this;
   }
-
 
   public consumeWithAck(callbackFn: (msg: any, then: ConsumeThen) => void) {
     this.promise = this.promise.then(() => {
@@ -176,9 +160,29 @@ export class QueueBase implements Promise<any> {
 
   public consumeRawWithAck(callbackFn: (msg: Message, then: ConsumeThen) => void) {
     this.promise = this.promise.then(() => {
-      return this.ch.consume(this.q.queue, msg => callbackFn(msg ,new ConsumeThen(this.ch, msg)), { noAck: false });
+      return this.ch.consume(this.q.queue, msg => callbackFn(msg , new ConsumeThen(this.ch, msg)), { noAck: false });
     });
     return this;
+  }
+
+  public [Symbol.toStringTag]: any;
+
+  public then<TResult1 = any, TResult2 = never>(
+    onfulfilled?: ((value: any) =>
+      TResult1 | PromiseLike<TResult1>) | undefined | null,
+    onrejected?: ((reason: any) =>
+      TResult2 | PromiseLike<TResult2>) | undefined | null
+  ): Promise<TResult1 | TResult2> {
+    return this.promise.then(() => {
+      this.thenOff = this.then;
+      this.then = null;
+      return this;
+    }).then(onfulfilled, onrejected);
+  }
+
+  // tslint:disable-next-line:no-reserved-keywords
+  public catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<any | TResult> {
+    return this.promise.then(onrejected);
   }
 
   /**

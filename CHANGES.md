@@ -1,4 +1,10 @@
-2017-10-06, Version 0.6.1
+2017-10-07, Version 0.6.2
+=========================
+
+ * Removed global Promise replace. (Russell Lewis)
+
+
+2017-10-05, Version 0.6.1
 =========================
 
  * Closed connections in tests so Mocha 4.0 didn't hand when running (Russell Lewis)

@@ -1,3 +1,9 @@
+2017-10-10, Version 0.6.4
+=========================
+
+ * Exchange and Queue not returned when resolving a publish/exchange action (Russell Lewis)
+
+
 2017-10-10, Version 0.6.3
 =========================
 

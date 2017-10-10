@@ -1,6 +1,6 @@
 {
   "name": "prmq",
-  "version": "0.6.4",
+  "version": "0.6.5",
   "description": "Promise Based AMPQ Wrapper for JS",
   "main": "dist/PRMQ.js",
   "scripts": {

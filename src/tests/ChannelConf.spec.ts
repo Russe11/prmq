@@ -18,13 +18,13 @@ describe('ChannelConf()', () => {
       'prmqTestExchange',
       'prmqTestFanoutExchange',
       'prmqTestDirectExchange',
-      'prmqTestTopicExchange',
+      'prmqTestTopicExchange'
     ], [
       'prmqTestQueue',
       'prmqCheckQueue'
 
     ]);
-    await ch.close()
+    await ch.close();
   });
 
   describe('queue()', () => {

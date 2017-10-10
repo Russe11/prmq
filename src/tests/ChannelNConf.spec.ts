@@ -23,7 +23,7 @@ describe('ChannelNConf()', () => {
       'prmqTestQueue',
       'prmqCheckQueue'
     ]);
-    await ch.close()
+    await ch.close();
   });
 
   describe('queue()', () => {

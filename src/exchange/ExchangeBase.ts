@@ -35,6 +35,8 @@ export class ExchangeBase implements Promise<any> {
 
   public shouldAssert: boolean = false;
 
+  public sends: any = [];
+
   constructor(
     public promise: Promise<any>,
     public channel: any,
@@ -42,6 +44,7 @@ export class ExchangeBase implements Promise<any> {
     public exchangeType: ExchangeTypes,
     public options?: Options.AssertExchange) {
       this.execAssert();
+      this.sends = [];
   }
 
   private resolveSelf: any;

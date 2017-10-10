@@ -27,8 +27,6 @@ import {ExchangeBase, ExchangeTypes} from './ExchangeBase';
 
 export class ExchangeConf extends ExchangeBase {
 
-  private sends: any[];
-
   constructor(
     promise: Promise<any>,
     channel: ConfirmChannel,
@@ -71,9 +69,10 @@ export class ExchangeConf extends ExchangeBase {
     if (this.then === null) {
       this.then = this.thenOff;
     }
+    console.log(this.sends);
     this.sends.push({ message, options, confirmationFn });
-    await this.promise.then(() => this.exec());
-    return this.promise;
+    this.promise = this.promise.then(() => this.exec());
+    return this;
   }
 
   /**
@@ -84,7 +83,8 @@ export class ExchangeConf extends ExchangeBase {
       this.then = this.thenOff;
     }
     this.sends.push({ message, routingKey, options, confirmationFn });
-    await this.promise.then(() => this.exec());
-    return this.promise;
+    this.promise = this.promise.then(() => this.exec());
+    return this;
   }
+
 }

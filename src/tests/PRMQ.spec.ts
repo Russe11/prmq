@@ -21,7 +21,4 @@ describe('Connection', () => {
     expect(ch.isClosed()).to.be.false;
     await ch.close();
   });
-
-
 });
-

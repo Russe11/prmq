@@ -54,7 +54,7 @@ export class QueueConf extends QueueBase {
     }
     this.sends.push({ message, options, confirmationFn });
     this.promise = this.promise.then(() => this.exec());
-    return this.promise;
+    return this;
   }
 
 }

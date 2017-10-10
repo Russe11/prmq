@@ -132,5 +132,75 @@ describe('Examples', () => {
         await q1.send('1st message', {correlationId: corr, replyTo: q2.queueName})
       });
   });
-});
 
+  it('NConf > Exchange > Publish should return results object if logs are on', () => {
+    return PRMQ.channel({ logResults: true })
+      .then(async (ch) => {
+
+        const ex = await ch.exchangeDirect('prmq_logs')
+          .publish('message');
+
+        expect(ex.results.publish[0]).to.include({
+          ex: 'prmq_logs',
+          routingKey: undefined,
+          msg: 'message'
+        });
+
+        await ch.close();
+      });
+  });
+
+  it('Conf > Exchange > Publish should return results object if logs are on', () => {
+    return PRMQ.confirmChannel({ logResults: true })
+      .then(async (ch) => {
+
+        const ex = await ch.exchangeDirect('prmq_logs')
+          .publish('message', {}, () => {
+            // Do nothing
+          });
+
+        expect(ex.results.publish[0]).to.include({
+          ex: 'prmq_logs',
+          routingKey: undefined,
+          msg: 'message'
+        });
+
+        await ch.close();
+      });
+  });
+
+  it('NConf > Queue > Send should return results object if logs are on', () => {
+    return PRMQ.channel({ logResults: true })
+      .then(async (ch) => {
+
+        const ex = await ch.queue('prmq_logs')
+          .send('message');
+
+        expect(ex.results.send[0]).to.include({
+          q: 'prmq_logs',
+          msg: 'message'
+        });
+
+        await ch.close();
+      });
+  });
+
+  it('Conf > Queue > Send should return results object if logs are on', () => {
+    return PRMQ.confirmChannel({ logResults: true })
+      .then(async (ch) => {
+
+        const ex = await ch.queue('prmq_logs')
+          .send('message', {}, () => {
+            // Do nothing
+          });
+
+        expect(ex.results.send[0]).to.include({
+          q: 'prmq_logs',
+          msg: 'message'
+        });
+
+        await ch.close();
+      });
+  });
+
+});

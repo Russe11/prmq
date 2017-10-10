@@ -45,7 +45,7 @@ export class QueueConf extends QueueBase {
         });
       }
     });
-    return this;
+    this.sends = [];
   }
 
   public async send(message: any, options: Options.Publish, confirmationFn: Function) {

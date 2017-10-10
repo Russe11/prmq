@@ -12,14 +12,14 @@ describe('Examples', () => {
     const ch = await PRMQ.channel();
     await ch.deleteExchangesAndQueues([
       'prmq_logs',
-      'prmq_topic',
+      'prmq_topic'
     ], [
       'prmq_task_queue',
       'prmq_logs',
       'prmq_hello',
       'prmq_rpc_queue'
     ]);
-    await ch.close()
+    await ch.close();
   });
 
   it('HelloWorld', (done) => {
@@ -123,15 +123,14 @@ describe('Examples', () => {
 
         const q2 = await ch.queue('', {exclusive: true})
           .consumeRaw(async (msg) => {
-            if (msg.properties.correlationId == corr) {
-
+            if (msg.properties.correlationId === corr) {
               await ch.close();
               done();
             }
           });
 
         await q1.send('1st message', {correlationId: corr, replyTo: q2.queueName})
-      })
-  })
+      });
+  });
 });
 

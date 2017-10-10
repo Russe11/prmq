@@ -7,7 +7,6 @@ import * as PRMQ from '../PRMQ';
 
 describe('Connection', () => {
 
-
   it('should create channel using connection string', async () => {
     const ch = await PRMQ.channel({ connectionString: 'amqp://localhost' });
     expect(ch.isClosed()).to.be.false;

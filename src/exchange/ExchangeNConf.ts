@@ -44,6 +44,7 @@ export class ExchangeNConf extends ExchangeBase {
   public async exec() {
 
     this.sends.forEach(async (s) => {
+
       const msg = typeof s.message === 'string' ? s.message : JSON.stringify(s.message);
       let publishRes;
       if (!s.routingKey) {
@@ -62,7 +63,6 @@ export class ExchangeNConf extends ExchangeBase {
     });
 
     this.sends = [];
-    return this;
   }
 
   /**
@@ -72,6 +72,7 @@ export class ExchangeNConf extends ExchangeBase {
     if (this.then === null) {
       this.then = this.thenOff;
     }
+
     this.sends.push({ message, options });
     this.promise = this.promise.then(() => this.exec());
     return this.promise;

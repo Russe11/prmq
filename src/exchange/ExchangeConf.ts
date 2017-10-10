@@ -73,7 +73,7 @@ export class ExchangeConf extends ExchangeBase {
     }
     this.sends.push({ message, options, confirmationFn });
     await this.promise.then(() => this.exec());
-    return this;
+    return this.promise;
   }
 
   /**
@@ -85,6 +85,6 @@ export class ExchangeConf extends ExchangeBase {
     }
     this.sends.push({ message, routingKey, options, confirmationFn });
     await this.promise.then(() => this.exec());
-    return this;
+    return this.promise;
   }
 }

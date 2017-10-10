@@ -48,7 +48,6 @@ export class QueueNConf extends QueueBase {
 
     });
     this.sends = [];
-    return this;
   }
 
   public async send(message: any, options?: Options.Publish) {

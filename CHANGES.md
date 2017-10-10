@@ -1,4 +1,10 @@
-2017-10-07, Version 0.6.2
+2017-10-10, Version 0.6.3
+=========================
+
+ * Fixed early returning promise (Russell Lewis)
+
+
+2017-10-06, Version 0.6.2
 =========================
 
  * Removed global Promise replace. (Russell Lewis)
@@ -152,6 +158,12 @@
 
 
 2017-09-19, Version 0.4.2
+=========================
+
+ * Removed /dist (Russell Lewis)
+
+
+2017-09-19, Version 0.4.1
 =========================
 
  * Removed /dist (Russell Lewis)

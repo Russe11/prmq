@@ -75,7 +75,7 @@ describe('Examples', () => {
           .bindWithRoutings(ex, [
             'info',
             'warning',
-            'error',
+            'error'
           ])
           .consumeRaw(async (msg) => {
             expect(msg.fields.routingKey).to.eq('info');

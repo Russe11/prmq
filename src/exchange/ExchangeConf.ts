@@ -69,7 +69,6 @@ export class ExchangeConf extends ExchangeBase {
     if (this.then === null) {
       this.then = this.thenOff;
     }
-    console.log(this.sends);
     this.sends.push({ message, options, confirmationFn });
     this.promise = this.promise.then(() => this.exec());
     return this;

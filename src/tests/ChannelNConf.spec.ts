@@ -98,7 +98,7 @@ describe('ChannelNConf()', () => {
     });
 
     it('should throw an error when a Queue object does not exist', async () => {
-      let ch = await PRMQ.channel();
+      const ch = await PRMQ.channel();
       const q = await ch.queue('prmqCheckQueue');
       await q.exec();
       expect(ch.checkQueue('prmqQueueNotExist')).to.be.rejected;

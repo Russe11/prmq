@@ -102,7 +102,6 @@ describe('ChannelConf()', () => {
       const ch = await PRMQ.confirmChannel();
       const q = await ch.queue('prmqCheckQueue');
       await q.exec();
-      expect(ch.checkQueue('prmqQueueNotExist')).to.be.rejected;
       await ch.close();
     });
   });

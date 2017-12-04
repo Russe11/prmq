@@ -1,3 +1,11 @@
+2017-12-04, Version 0.6.6
+=========================
+
+ * Tests (Russell Lewis)
+
+ * Fixed build issue (Russell Lewis)
+
+
 2017-10-10, Version 0.6.5
 =========================
 

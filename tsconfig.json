@@ -4,7 +4,7 @@
     "moduleResolution": "node",
     "target": "es5",
     "lib": ["es5", "es6", "es7", "es2015", "es2015.promise"],
-    "types" : ["chai", "amqplib", "bluebird", "chai-as-promised", "mocha", "node"],
+    "types" : ["chai", "amqplib", "bluebird", "mocha", "node"],
     "declaration": true,
     "outDir": "./dist"
   },

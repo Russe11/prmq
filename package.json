@@ -27,7 +27,7 @@
     "@types/bluebird": "3.5.18",
     "@types/chai": "4.0.8",
     "@types/chai-as-promised": "^7.1.0",
-    "@types/mocha": "2.2.44",
+    "@types/mocha": "2.2.45",
     "@types/node": "8.0.55",
     "amqplib": "0.5.2",
     "bluebird": "3.5.1",

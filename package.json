@@ -43,7 +43,7 @@
     "eslint-plugin-import": "2.8.0",
     "istanbul": "0.4.5",
     "mocha": "4.0.0",
-    "nyc": "11.4.0",
+    "nyc": "11.7.2",
     "tslint": "5.8.0",
     "tslint-microsoft-contrib": "5.0.1",
     "typescript": "2.6.2"

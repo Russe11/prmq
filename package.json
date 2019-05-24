@@ -45,7 +45,7 @@
     "mocha": "4.0.0",
     "nyc": "11.4.0",
     "tslint": "5.8.0",
-    "tslint-microsoft-contrib": "5.0.1",
+    "tslint-microsoft-contrib": "6.2.0",
     "typescript": "2.6.2"
   },
   "buildDependencies": [
